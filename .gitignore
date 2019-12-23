@@ -1,0 +1,16 @@
+# Ignore all files
+/*
+
+# Include the git configuration
+!.gitignore
+
+# Include the header and documentation files
+!doc/
+!doc/**/*
+!include/
+!include/*/**
+
+# Include the license and readme
+!LICENSE
+!README.md
+
