@@ -88,7 +88,8 @@ template<std::size_t N>
 Vector<N> Vector<N>::operator - () const {
     Vector<N> negative;
     std::transform(
-            std::begin(components), std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(negative.components),
             std::negate<>());
     return negative;
@@ -98,7 +99,8 @@ template<std::size_t N>
 Vector<N> Vector<N>::operator + (Vector<N> const & vector) const {
     Vector<N> sum;
     std::transform(
-            std::begin(components), std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(vector.components),
             std::begin(sum.components),
             std::plus<>());
@@ -109,7 +111,8 @@ template<std::size_t N>
 Vector<N> Vector<N>::operator - (Vector<N> const & vector) const {
     Vector<N> difference;
     std::transform(
-            std::begin(components), std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(vector.components),
             std::begin(difference.components),
             std::minus<>());
@@ -120,7 +123,8 @@ template<std::size_t N>
 Vector<N> Vector<N>::operator * (Vector<N> const & vector) const {
     Vector<N> product;
     std::transform(
-            std::begin(components), std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(vector.components),
             std::begin(product.components),
             std::multiplies<>());
@@ -131,7 +135,8 @@ template<std::size_t N>
 Vector<N> Vector<N>::operator / (Vector<N> const & vector) const {
     Vector<N> fraction;
     std::transform(
-            std::begin(components), std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(vector.components),
             std::begin(fraction.components),
             std::divides<>());
@@ -142,7 +147,8 @@ template<std::size_t N>
 Vector<N> Vector<N>::operator * (float scalar) const {
     Vector<N> product;
     std::transform(
-            std::begin(components), std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(product.components),
             [&scalar](float component){
                 return component * scalar;
@@ -154,7 +160,8 @@ template<std::size_t N>
 Vector<N> Vector<N>::operator / (float scalar) const {
     Vector<N> fraction;
     std::transform(
-            std::begin(components), std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(fraction.components),
             [&scalar](float component){
                 return component / scalar;
@@ -165,7 +172,8 @@ Vector<N> Vector<N>::operator / (float scalar) const {
 template<std::size_t N>
 Vector<N> & Vector<N>::operator += (Vector<N> const & vector) {
     std::transform(
-            std::begin(components), std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(vector.components),
             std::begin(components),
             std::plus<>());
@@ -175,7 +183,8 @@ Vector<N> & Vector<N>::operator += (Vector<N> const & vector) {
 template<std::size_t N>
 Vector<N> & Vector<N>::operator -= (Vector<N> const & vector) {
     std::transform(
-            std::begin(components), std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(vector.components),
             std::begin(components),
             std::minus<>());
@@ -185,7 +194,8 @@ Vector<N> & Vector<N>::operator -= (Vector<N> const & vector) {
 template<std::size_t N>
 Vector<N> & Vector<N>::operator *= (Vector<N> const & vector) {
     std::transform(
-            std::begin(components), std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(vector.components),
             std::begin(components),
             std::multiplies<>());
@@ -195,7 +205,8 @@ Vector<N> & Vector<N>::operator *= (Vector<N> const & vector) {
 template<std::size_t N>
 Vector<N> & Vector<N>::operator /= (Vector<N> const & vector) {
     std::transform(
-            std::begin(components), std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(vector.components),
             std::begin(components),
             std::divides<>());
@@ -205,7 +216,8 @@ Vector<N> & Vector<N>::operator /= (Vector<N> const & vector) {
 template<std::size_t N>
 Vector<N> & Vector<N>::operator *= (float scalar) {
     std::transform(
-            std::begin(components),std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(components),
             [&scalar](float component){
                 return component * scalar;
@@ -216,7 +228,8 @@ Vector<N> & Vector<N>::operator *= (float scalar) {
 template<std::size_t N>
 Vector<N> & Vector<N>::operator /= (float scalar) {
     std::transform(
-            std::begin(components),std::end(components),
+            std::begin(components),
+            std::end(components),
             std::begin(components),
             [&scalar](float component){
                 return component / scalar;
