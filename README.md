@@ -1,6 +1,6 @@
 # Euclidian
 
-...
+A header-only C++ library for matrix/vector operations with constant dimensions.
 
 ## Example
 Code:
