@@ -116,7 +116,8 @@ template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator + (Matrix<M, N> const & matrix) const {
     Matrix<M, N> sum;
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(matrix.elements),
             std::begin(sum.elements),
             std::plus<>());
@@ -127,7 +128,8 @@ template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator - (Matrix<M, N> const & matrix) const {
     Matrix<M, N> difference;
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(matrix.elements),
             std::begin(difference.elements),
             std::minus<>());
@@ -138,7 +140,8 @@ template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator * (Matrix<M, N> const & matrix) const {
     Matrix<M, N> product;
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(matrix.elements),
             std::begin(product.elements),
             std::multiplies<>());
@@ -149,7 +152,8 @@ template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator / (Matrix<M, N> const & matrix) const {
     Matrix<M, N> fraction;
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(matrix.elements),
             std::begin(fraction.elements),
             std::divides<>());
@@ -160,7 +164,8 @@ template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator * (float scalar) const {
     Matrix<M, N> product;
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(product.elements),
             [&scalar](float element) {
                 return element * scalar;
@@ -172,7 +177,8 @@ template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator / (float scalar) const {
     Matrix<M, N> fraction;
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(fraction.elements),
             [&scalar](float element) {
                 return element / scalar;
@@ -183,7 +189,8 @@ Matrix<M, N> Matrix<M, N>::operator / (float scalar) const {
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator += (Matrix<M, N> const & matrix) {
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(matrix.elements),
             std::begin(elements),
             std::plus<>());
@@ -193,7 +200,8 @@ Matrix<M, N> & Matrix<M, N>::operator += (Matrix<M, N> const & matrix) {
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator -= (Matrix<M, N> const & matrix) {
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(matrix.elements),
             std::begin(elements),
             std::minus<>());
@@ -203,7 +211,8 @@ Matrix<M, N> & Matrix<M, N>::operator -= (Matrix<M, N> const & matrix) {
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator *= (Matrix<M, N> const & matrix) {
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(matrix.elements),
             std::begin(elements),
             std::multiplies<>());
@@ -213,7 +222,8 @@ Matrix<M, N> & Matrix<M, N>::operator *= (Matrix<M, N> const & matrix) {
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator /= (Matrix<M, N> const & matrix) {
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(matrix.elements),
             std::begin(elements),
             std::divides<>());
@@ -223,7 +233,8 @@ Matrix<M, N> & Matrix<M, N>::operator /= (Matrix<M, N> const & matrix) {
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator *= (float scalar) {
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(elements),
             [&scalar](float element) {
                 return element * scalar;
@@ -234,7 +245,8 @@ Matrix<M, N> & Matrix<M, N>::operator *= (float scalar) {
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator /= (float scalar) {
     std::transform(
-            std::begin(elements), std::end(elements),
+            std::begin(elements),
+            std::end(elements),
             std::begin(elements),
             [&scalar](float element) {
                 return element / scalar;
