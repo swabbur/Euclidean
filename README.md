@@ -1,6 +1,6 @@
 # Euclidian
 
-A header-only C++ library for matrix/vector operations with constant dimensions.
+A header-only C++ library for linear algebra operations with compile-time constant dimensions. Build with the [CMake](https://cmake.org/), tested with [Google Test](https://github.com/google/googletest), and styled based on the Pitchfork Layout ([PFL](https://github.com/vector-of-bool/pitchfork)) and the style guide for python code ([PEP8](https://www.python.org/dev/peps/pep-0008/)).
 
 ## Example
 Code:
