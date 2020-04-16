@@ -12,8 +12,6 @@ class Matrix {
 
 public:
 
-    static Matrix<M, N> random();
-
     static Matrix<M, N> identity();
 
     template<typename ... Arguments>
@@ -57,22 +55,6 @@ public:
 
     Vector<N> & end();
 };
-
-template<std::size_t M, std::size_t N>
-Matrix<M, N> Matrix<M, N>::random() {
-
-    static std::random_device device;
-    static std::default_random_engine engine(device());
-    static std::uniform_real_distribution<float> distribution;
-
-    Matrix<M, N> matrix;
-    for (std::size_t m = 0; m < M; m++) {
-        for (std::size_t n = 0; n < N; n++) {
-            matrix[m][n] = distribution(engine);
-        }
-    }
-    return matrix;
-}
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::identity() {
