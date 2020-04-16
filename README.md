@@ -4,6 +4,8 @@ A header-only C++ library for linear algebra operations with compile-time consta
 
 Do not forget to pass the `-DBUILD_TESTING=ON` option to CMake to enable unit testing.
 
+![alt text](https://github.com/swabbur/Euclidian/workflows/Continuous%20Integration/badge.svg "Continuous Integration")
+
 ## Example
 Code:
 ```cpp
