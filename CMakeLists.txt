@@ -22,6 +22,6 @@ if (EUCLIDIAN_BUILD_TESTS)
     include(GoogleTest REQUIRED)
 
     add_executable(EuclidianTest tests/VectorTest.cpp)
-    target_link_libraries(EuclidianTest GTest::GTest GTest::Main)
+    target_link_libraries(EuclidianTest Euclidian GTest::GTest GTest::Main)
     gtest_discover_tests(EuclidianTest)
 endif()
