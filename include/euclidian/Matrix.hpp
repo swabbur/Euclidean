@@ -2,9 +2,6 @@
 
 #include "Vector.hpp"
 
-#include <array>
-#include <random>
-
 template<std::size_t M, std::size_t N = M>
 class Matrix {
 
@@ -20,7 +17,7 @@ public:
     static Matrix<M, N> identity();
 
     template<typename ... Arguments>
-    Matrix(Arguments ... arguments);
+    explicit Matrix(Arguments ... arguments);
 
     [[nodiscard]] Vector<N> const & operator [] (std::size_t index) const;
 

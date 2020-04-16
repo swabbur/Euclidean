@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <random>
 
@@ -13,7 +14,7 @@ public:
     static Vector<N> random();
 
     template<typename ... Arguments>
-    Vector(Arguments ... arguments);
+    explicit Vector(Arguments ... arguments);
 
     [[nodiscard]] float operator [] (std::size_t index) const;
 
