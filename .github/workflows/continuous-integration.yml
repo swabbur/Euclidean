@@ -1,0 +1,30 @@
+name: Continuous Integration
+
+on:
+  
+  push:
+    branches:
+      - master
+      - continuous-integration
+
+  pull_request:
+    branches:
+      - master
+      - continuous-integration
+
+jobs:
+
+  test:
+    name: Setup, Build, and Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: sudo apt install libgtest-dev cmake
+    - name: Build and Run Test Executable
+      run: |
+        mkdir -p build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON ..
+        make
+        ./EuclidianTest
