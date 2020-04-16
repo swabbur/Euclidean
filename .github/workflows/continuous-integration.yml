@@ -5,12 +5,10 @@ on:
   push:
     branches:
       - master
-      - continuous-integration
 
   pull_request:
     branches:
       - master
-      - continuous-integration
 
 jobs:
 
@@ -21,19 +19,19 @@ jobs:
     
     - uses: actions/checkout@v2
     
-    - name: Install Dependencies
+    - name: Install APT dependencies
       run: sudo apt install libgtest-dev build-essential cmake
       
-    - name: Build and Install GTest
+    - name: Build and install GTest
       run: |
         cd /usr/src/googletest
         sudo cmake .
         sudo cmake --build . --target install
         
-    - name: Build and Run Test Executable
+    - name: Build tests
       run: |
-        mkdir -p build
-        cd build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON ..
+        cmake -DBUILD_TESTING=ON .
         make
-        ./EuclidianTest
+        
+    - name: Run tests
+      run: ./EuclidianTest
