@@ -18,9 +18,18 @@ jobs:
     name: Setup, Build, and Test
     runs-on: ubuntu-latest
     steps:
+    
     - uses: actions/checkout@v2
+    
     - name: Install Dependencies
-      run: sudo apt install libgtest-dev cmake
+      run: sudo apt install libgtest-dev build-essential cmake
+      
+    - name: Build and Install GTest
+      run: |
+        cd /usr/src/googletest
+        sudo cmake .
+        sudo cmake --build . --target install
+        
     - name: Build and Run Test Executable
       run: |
         mkdir -p build
