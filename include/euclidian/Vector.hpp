@@ -14,7 +14,7 @@ public:
     static Vector<N> random();
 
     template<typename ... Arguments>
-    explicit Vector(Arguments ... arguments);
+    Vector(Arguments ... arguments);
 
     [[nodiscard]] float operator [] (std::size_t index) const;
 

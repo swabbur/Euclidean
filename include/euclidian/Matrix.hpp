@@ -17,7 +17,7 @@ public:
     static Matrix<M, N> identity();
 
     template<typename ... Arguments>
-    explicit Matrix(Arguments ... arguments);
+    Matrix(Arguments ... arguments);
 
     [[nodiscard]] Vector<N> const & operator [] (std::size_t index) const;
 
