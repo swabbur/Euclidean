@@ -4,11 +4,14 @@
 # Include the git configuration
 !.gitignore
 
-# Include the header and documentation files
+# Include the header, documentation, and cmake files
 !doc/
 !doc/**/*
 !include/
 !include/*/**
+!tests/
+!tests/*/**
+!CMakeLists.txt
 
 # Include the license and readme
 !LICENSE
