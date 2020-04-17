@@ -4,6 +4,7 @@
 #include "Vector.hpp"
 
 #include <cmath>
+#include <numeric>
 
 template<std::size_t M, std::size_t N>
 Matrix<N, M> transpose(Matrix<M, N> const & matrix) {
