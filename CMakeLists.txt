@@ -22,6 +22,7 @@ if (EUCLIDIAN_BUILD_TESTS)
     include(GoogleTest REQUIRED)
 
     add_executable(EuclidianTest
+            tests/euclidian/Assertions.cpp
             tests/euclidian/MatrixTest.cpp
             tests/euclidian/VectorTest.cpp)
 
