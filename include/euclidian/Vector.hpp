@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <array>
-#include <random>
 
 template<std::size_t N>
 class Vector {
@@ -11,10 +10,8 @@ class Vector {
 
 public:
 
-    static Vector<N> random();
-
     template<typename ... Arguments>
-    explicit Vector(Arguments ... arguments);
+    Vector(Arguments ... arguments);
 
     [[nodiscard]] float operator [] (std::size_t index) const;
 
@@ -54,20 +51,6 @@ public:
 
     float * end();
 };
-
-template<std::size_t N>
-Vector<N> Vector<N>::random() {
-
-    static std::random_device device;
-    static std::default_random_engine engine(device());
-    static std::uniform_real_distribution<float> distribution;
-
-    Vector<N> vector;
-    for (std::size_t n = 0; n < N; n++) {
-        vector[n] = distribution(engine);
-    }
-    return vector;
-}
 
 template<std::size_t N>
 template<typename ... Arguments>

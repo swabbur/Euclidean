@@ -21,7 +21,11 @@ if (EUCLIDIAN_BUILD_TESTS)
     find_package(GTest REQUIRED)
     include(GoogleTest REQUIRED)
 
-    add_executable(EuclidianTest tests/VectorTest.cpp)
+    add_executable(EuclidianTest
+            tests/euclidian/Assertions.cpp
+            tests/euclidian/MatrixTest.cpp
+            tests/euclidian/VectorTest.cpp)
+
     target_link_libraries(EuclidianTest Euclidian GTest::GTest GTest::Main)
     gtest_discover_tests(EuclidianTest)
 endif()
