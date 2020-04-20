@@ -27,6 +27,13 @@ TEST(Vector, ImplicitConstructor) {
     assert_scalar(vector[2], 3.0f);
 }
 
+TEST(Vector, Composition) {
+
+    Vector<5> vector(1.0f, 2.0f, Vector<2>(3.0f, 4.0f), 5.0f);
+
+    assert_vector(vector, { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f });
+}
+
 TEST(Vector, Assignment) {
 
     Vector<3> first;

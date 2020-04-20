@@ -7,6 +7,9 @@
 template<std::size_t N>
 class Vector {
 
+    template<std::size_t OFFSET, typename ... Arguments>
+    struct Filler;
+
     std::array<float, N> components;
 
     [[nodiscard]] Vector<N> map(std::function<float(float)> const & function) const;
@@ -22,7 +25,7 @@ class Vector {
 public:
 
     template<typename ... Arguments>
-    Vector(Arguments ... arguments);
+    Vector(Arguments const & ... arguments);
 
     [[nodiscard]] float operator [] (std::size_t index) const;
 
@@ -64,6 +67,35 @@ public:
 };
 
 template<std::size_t N>
+template<std::size_t OFFSET, typename ... Arguments>
+struct Vector<N>::Filler {
+
+    static void fill(Vector<N> & vector) {
+        static_assert(OFFSET == N, "Incorrect number of arguments provided");
+    }
+};
+
+template<std::size_t N>
+template<std::size_t OFFSET, typename ... Arguments>
+struct Vector<N>::Filler<OFFSET, float, Arguments ...> {
+
+    static void fill(Vector<N> & vector, float component, Arguments const & ... arguments) {
+        vector[OFFSET] = component;
+        Filler<OFFSET + 1, Arguments ...>::fill(vector, arguments ...);
+    }
+};
+
+template<std::size_t N>
+template<std::size_t OFFSET, std::size_t M, typename ... Arguments>
+struct Vector<N>::Filler<OFFSET, Vector<M>, Arguments ...> {
+
+    static void fill(Vector<N> & vector, Vector<M> const & components, Arguments const & ... arguments) {
+        std::move(std::begin(components), std::end(components), std::next(std::begin(vector), OFFSET));
+        Filler<OFFSET + M, Arguments ...>::fill(vector, arguments ...);
+    }
+};
+
+template<std::size_t N>
 Vector<N> Vector<N>::map(std::function<float(float)> const & function) const {
     Vector<N> result;
     std::transform(begin(), end(), std::begin(result), function);
@@ -102,9 +134,10 @@ Vector<N> & Vector<N>::apply(Vector<N> const & vector, std::function<float(float
 
 template<std::size_t N>
 template<typename ... Arguments>
-Vector<N>::Vector(Arguments ... arguments): components{ arguments ... } {
-    std::size_t const SIZE = sizeof ... (Arguments);
-    static_assert(SIZE == 0 || SIZE == N, "Incorrect number of components");
+Vector<N>::Vector(Arguments const & ... arguments): components{} {
+    if constexpr (sizeof ... (Arguments) > 0) {
+        Filler<0, Arguments ...>::fill(*this, arguments ...);
+    }
 }
 
 template<std::size_t N>
