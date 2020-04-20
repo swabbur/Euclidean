@@ -8,7 +8,7 @@ Do not forget to pass the `-DBUILD_TESTING=ON` option to CMake to enable unit te
 
 ## Features
 
-### Composition Constructors
+### Composition
 Composition constructors make it a lot easier to construct larger and more complex vectors from smaller ones.
 ```cpp
 Vector<5> vector(1.0f, 2.0f, Vector<2>(3.0f, 4.0f), 5.0f);
@@ -19,6 +19,16 @@ An important but often overlooked feature is STL compatibility. Which allows the
 ```cpp
 Vector<3> vector;
 std::fill(std::begin(vector), std::end(vector), 1.0f);
+```
+
+### Implicit Constructors
+Implicit constructors, while not always optimal, allow for better readable matrix definitions.
+```cpp
+Matrix<3, 3> matrix = {
+        1.0f, 2.0f, 3.0f,
+        4.0f, 5.0f, 6.0f,
+        7.0f, 8.0f, 9.0f
+};
 ```
 
 ## Upcoming Features
