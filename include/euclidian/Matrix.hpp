@@ -10,6 +10,16 @@ class Matrix {
         std::array<Vector<N>, M> rows;
     };
 
+    [[nodiscard]] Matrix<M, N> map(std::function<float(float)> const & function) const;
+
+    [[nodiscard]] Matrix<M, N> map(float scalar, std::function<float(float, float)> const & function) const;
+
+    [[nodiscard]] Matrix<M, N> map(Matrix<M, N> const & matrix, std::function<float(float, float)> const & function) const;
+
+    Matrix<M, N> & apply(float scalar, std::function<float(float, float)> const & function) const;
+
+    Matrix<M, N> & apply(Matrix<M, N> const & matrix, std::function<float(float, float)> const & function) const;
+
 public:
 
     static Matrix<M, N> identity();
@@ -57,6 +67,65 @@ public:
 };
 
 template<std::size_t M, std::size_t N>
+Matrix<M, N> Matrix<M, N>::map(std::function<float(float)> const & function) const {
+    Matrix<M, N> result;
+    std::transform(
+            std::begin(elements),
+            std::end(elements),
+            std::begin(result.elements),
+            function);
+    return result;
+}
+
+template<std::size_t M, std::size_t N>
+Matrix<M, N> Matrix<M, N>::map(float scalar, std::function<float(float, float)> const & function) const {
+    Matrix<M, N> result;
+    std::transform(
+            std::begin(elements),
+            std::end(elements),
+            std::begin(result.elements),
+            [scalar, &function](float element) {
+                return function(element, scalar);
+            });
+    return result;
+}
+
+template<std::size_t M, std::size_t N>
+Matrix<M, N> Matrix<M, N>::map(Matrix<M, N> const & matrix, std::function<float(float, float)> const & function) const {
+    Matrix<M, N> result;
+    std::transform(
+            std::begin(elements),
+            std::end(elements),
+            std::begin(matrix.elements),
+            std::begin(result.elements),
+            function);
+    return result;
+}
+
+template<std::size_t M, std::size_t N>
+Matrix<M, N> & Matrix<M, N>::apply(float scalar, std::function<float(float, float)> const & function) const {
+    std::transform(
+            std::begin(elements),
+            std::end(elements),
+            std::begin(elements),
+            [scalar, &function](float element) {
+                return function(element, scalar);
+            });
+    return *this;
+}
+
+template<std::size_t M, std::size_t N>
+Matrix<M, N> & Matrix<M, N>::apply(Matrix<M, N> const & matrix, std::function<float(float, float)> const & function) const {
+    std::transform(
+            std::begin(elements),
+            std::end(elements),
+            std::begin(matrix.elements),
+            std::begin(elements),
+            function);
+    return *this;
+}
+
+template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::identity() {
     Matrix<M, N> matrix;
     for (std::size_t i = 0; i < M && i < N; i++) {
@@ -68,7 +137,8 @@ Matrix<M, N> Matrix<M, N>::identity() {
 template<std::size_t M, std::size_t N>
 template<typename ... Arguments>
 Matrix<M, N>::Matrix(Arguments ... arguments): elements{ arguments ...} {
-    static_assert(sizeof ... (Arguments) == 0 || sizeof ... (Arguments) == M * N, "Incorrect number of elements");
+    std::size_t const COUNT = sizeof ... (Arguments);
+    static_assert(COUNT == 0 || COUNT == M * N, "Incorrect number of elements");
 }
 
 template<std::size_t M, std::size_t N>
@@ -83,154 +153,67 @@ Vector<N> & Matrix<M, N>::operator [] (std::size_t index) {
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator - () const {
-    Matrix<M, N> negative;
-    std::transform(
-            std::begin(elements), std::end(elements),
-            std::begin(negative.elements),
-            std::negate<>());
-    return negative;
+    return map(std::negate<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator + (Matrix<M, N> const & matrix) const {
-    Matrix<M, N> sum;
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(matrix.elements),
-            std::begin(sum.elements),
-            std::plus<>());
-    return sum;
+    return map(matrix, std::plus<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator - (Matrix<M, N> const & matrix) const {
-    Matrix<M, N> difference;
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(matrix.elements),
-            std::begin(difference.elements),
-            std::minus<>());
-    return difference;
+    return map(matrix, std::minus<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator * (Matrix<M, N> const & matrix) const {
-    Matrix<M, N> product;
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(matrix.elements),
-            std::begin(product.elements),
-            std::multiplies<>());
-    return product;
+    return map(matrix, std::multiplies<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator / (Matrix<M, N> const & matrix) const {
-    Matrix<M, N> fraction;
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(matrix.elements),
-            std::begin(fraction.elements),
-            std::divides<>());
-    return fraction;
+    return map(matrix, std::divides<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator * (float scalar) const {
-    Matrix<M, N> product;
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(product.elements),
-            [&scalar](float element) {
-                return element * scalar;
-            });
-    return product;
+    return map(scalar, std::multiplies<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::operator / (float scalar) const {
-    Matrix<M, N> fraction;
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(fraction.elements),
-            [&scalar](float element) {
-                return element / scalar;
-            });
-    return fraction;
+    return map(scalar, std::divides<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator += (Matrix<M, N> const & matrix) {
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(matrix.elements),
-            std::begin(elements),
-            std::plus<>());
-    return *this;
+    return apply(matrix, std::plus<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator -= (Matrix<M, N> const & matrix) {
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(matrix.elements),
-            std::begin(elements),
-            std::minus<>());
-    return *this;
+    return apply(matrix, std::minus<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator *= (Matrix<M, N> const & matrix) {
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(matrix.elements),
-            std::begin(elements),
-            std::multiplies<>());
-    return *this;
+    return apply(matrix, std::multiplies<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator /= (Matrix<M, N> const & matrix) {
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(matrix.elements),
-            std::begin(elements),
-            std::divides<>());
-    return *this;
+    return apply(matrix, std::divides<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator *= (float scalar) {
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(elements),
-            [&scalar](float element) {
-                return element * scalar;
-            });
-    return *this;
+    return apply(scalar, std::multiplies<>());
 }
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> & Matrix<M, N>::operator /= (float scalar) {
-    std::transform(
-            std::begin(elements),
-            std::end(elements),
-            std::begin(elements),
-            [&scalar](float element) {
-                return element / scalar;
-            });
-    return *this;
+    return apply(scalar, std::divides<>());
 }
 
 template<std::size_t M, std::size_t N>

@@ -2,11 +2,22 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 
 template<std::size_t N>
 class Vector {
 
     std::array<float, N> components;
+
+    [[nodiscard]] Vector<N> map(std::function<float(float)> const & function) const;
+
+    [[nodiscard]] Vector<N> map(float scalar, std::function<float(float, float)> const & function) const;
+
+    [[nodiscard]] Vector<N> map(Vector<N> const & vector, std::function<float(float, float)> const & function) const;
+
+    Vector<N> & apply(float scalar, std::function<float(float, float)> const & function) const;
+
+    Vector<N> & apply(Vector<N> const & vector, std::function<float(float, float)> const & function) const;
 
 public:
 
@@ -53,9 +64,47 @@ public:
 };
 
 template<std::size_t N>
+Vector<N> Vector<N>::map(std::function<float(float)> const & function) const {
+    Vector<N> result;
+    std::transform(begin(), end(), std::begin(result), function);
+    return result;
+}
+
+template<std::size_t N>
+Vector<N> Vector<N>::map(float scalar, std::function<float(float, float)> const & function) const {
+    Vector<N> result;
+    std::transform(begin(), end(), std::begin(result), [scalar, &function](float component){
+        return function(component, scalar);
+    });
+    return result;
+}
+
+template<std::size_t N>
+Vector<N> Vector<N>::map(Vector<N> const & vector, std::function<float(float, float)> const & function) const {
+    Vector<N> result;
+    std::transform(begin(), end(), std::begin(vector), std::begin(result), function);
+    return result;
+}
+
+template<std::size_t N>
+Vector<N> & Vector<N>::apply(float scalar, std::function<float(float, float)> const & function) const {
+    std::transform(begin(), end(), begin(), [scalar, &function](float component){
+        return function(component, scalar);
+    });
+    return *this;
+}
+
+template<std::size_t N>
+Vector<N> & Vector<N>::apply(Vector<N> const & vector, std::function<float(float, float)> const & function) const {
+    std::transform(begin(), end(), std::begin(vector), begin(), function);
+    return *this;
+}
+
+template<std::size_t N>
 template<typename ... Arguments>
 Vector<N>::Vector(Arguments ... arguments): components{ arguments ... } {
-    static_assert(sizeof ... (Arguments) == 0 || sizeof ... (Arguments) == N, "Incorrect number of components");
+    std::size_t const SIZE = sizeof ... (Arguments);
+    static_assert(SIZE == 0 || SIZE == N, "Incorrect number of components");
 }
 
 template<std::size_t N>
@@ -70,155 +119,67 @@ float & Vector<N>::operator [] (std::size_t index) {
 
 template<std::size_t N>
 Vector<N> Vector<N>::operator - () const {
-    Vector<N> negative;
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(negative.components),
-            std::negate<>());
-    return negative;
+    return map(std::negate<>());
 }
 
 template<std::size_t N>
 Vector<N> Vector<N>::operator + (Vector<N> const & vector) const {
-    Vector<N> sum;
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(vector.components),
-            std::begin(sum.components),
-            std::plus<>());
-    return sum;
+    return map(vector, std::plus<>());
 }
 
 template<std::size_t N>
 Vector<N> Vector<N>::operator - (Vector<N> const & vector) const {
-    Vector<N> difference;
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(vector.components),
-            std::begin(difference.components),
-            std::minus<>());
-    return difference;
+    return map(vector, std::minus<>());
 }
 
 template<std::size_t N>
 Vector<N> Vector<N>::operator * (Vector<N> const & vector) const {
-    Vector<N> product;
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(vector.components),
-            std::begin(product.components),
-            std::multiplies<>());
-    return product;
+    return map(vector, std::multiplies<>());
 }
 
 template<std::size_t N>
 Vector<N> Vector<N>::operator / (Vector<N> const & vector) const {
-    Vector<N> fraction;
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(vector.components),
-            std::begin(fraction.components),
-            std::divides<>());
-    return fraction;
+    return map(vector, std::divides<>());
 }
 
 template<std::size_t N>
 Vector<N> Vector<N>::operator * (float scalar) const {
-    Vector<N> product;
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(product.components),
-            [&scalar](float component){
-                return component * scalar;
-            });
-    return product;
+    return map(scalar, std::multiplies<>());
 }
 
 template<std::size_t N>
 Vector<N> Vector<N>::operator / (float scalar) const {
-    Vector<N> fraction;
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(fraction.components),
-            [&scalar](float component){
-                return component / scalar;
-            });
-    return fraction;
+    return map(scalar, std::divides<>());
 }
 
 template<std::size_t N>
 Vector<N> & Vector<N>::operator += (Vector<N> const & vector) {
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(vector.components),
-            std::begin(components),
-            std::plus<>());
-    return *this;
+    return apply(vector, std::plus<>());
 }
 
 template<std::size_t N>
 Vector<N> & Vector<N>::operator -= (Vector<N> const & vector) {
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(vector.components),
-            std::begin(components),
-            std::minus<>());
-    return *this;
+    return apply(vector, std::minus<>());
 }
 
 template<std::size_t N>
 Vector<N> & Vector<N>::operator *= (Vector<N> const & vector) {
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(vector.components),
-            std::begin(components),
-            std::multiplies<>());
-    return *this;
+    return apply(vector, std::multiplies<>());
 }
 
 template<std::size_t N>
 Vector<N> & Vector<N>::operator /= (Vector<N> const & vector) {
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(vector.components),
-            std::begin(components),
-            std::divides<>());
-    return *this;
+    return apply(vector, std::divides<>());
 }
 
 template<std::size_t N>
 Vector<N> & Vector<N>::operator *= (float scalar) {
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(components),
-            [&scalar](float component){
-                return component * scalar;
-            });
-    return *this;
+    return apply(scalar, std::multiplies<>());
 }
 
 template<std::size_t N>
 Vector<N> & Vector<N>::operator /= (float scalar) {
-    std::transform(
-            std::begin(components),
-            std::end(components),
-            std::begin(components),
-            [&scalar](float component){
-                return component / scalar;
-            });
-    return *this;
+    return apply(scalar, std::divides<>());
 }
 
 template<std::size_t N>
