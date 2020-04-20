@@ -11,8 +11,7 @@ include(CMakeDependentOption)
 cmake_dependent_option(
         EUCLIDIAN_BUILD_TESTS
         "Enable ${PROJECT_NAME} project tests targets" ON
-        "BUILD_TESTING" OFF
-)
+        "BUILD_TESTING" OFF)
 
 if (EUCLIDIAN_BUILD_TESTS)
 
