@@ -8,11 +8,11 @@ class Vector {
 
     std::array<float, N> components;
 
-    Vector<N> map(std::function<float(float)> const & function) const;
+    [[nodiscard]] Vector<N> map(std::function<float(float)> const & function) const;
 
-    Vector<N> map(float scalar, std::function<float(float, float)> const & function) const;
+    [[nodiscard]] Vector<N> map(float scalar, std::function<float(float, float)> const & function) const;
 
-    Vector<N> map(Vector<N> const & vector, std::function<float(float, float)> const & function) const;
+    [[nodiscard]] Vector<N> map(Vector<N> const & vector, std::function<float(float, float)> const & function) const;
 
     Vector<N> & apply(float scalar, std::function<float(float, float)> const & function) const;
 
