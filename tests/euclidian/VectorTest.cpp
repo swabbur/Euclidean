@@ -148,7 +148,7 @@ TEST(Vector, ScalarDivisionZero) {
 
     assert_inf(fraction[0]);
     assert_nan(fraction[1]);
-    assert_inf(fraction[0]);
+    assert_inf(fraction[2]);
 }
 
 TEST(Vector, ScalarDivisionPositive) {

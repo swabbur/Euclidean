@@ -1,7 +1,7 @@
 #include "Assertions.h"
 
 void assert_nan(float scalar) {
-    ASSERT_TRUE(std::isnan(scalar)) << "Expected component to be 'inf'";
+    ASSERT_TRUE(std::isnan(scalar)) << "Expected component to be 'nan'";
 }
 
 void assert_inf(float scalar) {
