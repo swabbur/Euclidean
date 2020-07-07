@@ -22,7 +22,15 @@ class Matrix {
 
 public:
 
+    static Matrix<M, N> zeros();
+
+    static Matrix<M, N> ones();
+
     static Matrix<M, N> identity();
+
+    static Matrix<M, N> random(std::uint32_t seed);
+
+    static Matrix<M, N> random();
 
     template<typename ... Arguments>
     Matrix(Arguments ... arguments);
@@ -126,12 +134,42 @@ Matrix<M, N> & Matrix<M, N>::apply(Matrix<M, N> const & matrix, std::function<fl
 }
 
 template<std::size_t M, std::size_t N>
+Matrix<M, N> Matrix<M, N>::zeros() {
+    return Vector<N>();
+}
+
+template<std::size_t M, std::size_t N>
+Matrix<M, N> Matrix<M, N>::ones() {
+    Matrix<M, N> filled;
+    std::fill(std::begin(filled.elements), std::end(filled.elements), 1.0f);
+    return filled;
+}
+
+template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::identity() {
     Matrix<M, N> matrix;
     for (std::size_t i = 0; i < M && i < N; i++) {
         matrix[i][i] = 1.0f;
     }
     return matrix;
+}
+
+template<std::size_t M, std::size_t N>
+Matrix<M, N> Matrix<M, N>::random(std::uint32_t seed) {
+    Matrix<M, N> generated;
+    std::mt19937 generator(seed);
+    std::uniform_real_distribution distribution;
+    std::generate(std::begin(generated.elements), std::end(generated.elements), [&distribution, &generator](){
+        return distribution(generator);
+    });
+    return generated;
+}
+
+template<std::size_t M, std::size_t N>
+Matrix<M, N> Matrix<M, N>::random() {
+    std::random_device device;
+    std::uint32_t seed = device();
+    return random(seed);
 }
 
 template<std::size_t M, std::size_t N>

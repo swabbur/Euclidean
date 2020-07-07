@@ -1,5 +1,23 @@
 #include "Assertions.h"
 
+TEST(Vector, Zeros) {
+
+    Vector<3> vector = Vector<3>::zeros();
+
+    assert_scalar(vector[0], 0.0f);
+    assert_scalar(vector[1], 0.0f);
+    assert_scalar(vector[2], 0.0f);
+}
+
+TEST(Vector, Ones) {
+
+    Vector<3> vector = Vector<3>::ones();
+
+    assert_scalar(vector[0], 1.0f);
+    assert_scalar(vector[1], 1.0f);
+    assert_scalar(vector[2], 1.0f);
+}
+
 TEST(Vector, DefaultConstructor) {
 
     Vector<3> vector;
