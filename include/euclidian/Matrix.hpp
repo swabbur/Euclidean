@@ -61,9 +61,9 @@ public:
 
     [[nodiscard]] Vector<N> const & end() const;
 
-    Vector<N> & begin();
+    Vector<N> * begin();
 
-    Vector<N> & end();
+    Vector<N> * end();
 };
 
 template<std::size_t M, std::size_t N>
@@ -227,11 +227,11 @@ Vector<N> const & Matrix<M, N>::end() const {
 }
 
 template<std::size_t M, std::size_t N>
-Vector<N> & Matrix<M, N>::begin() {
+Vector<N> * Matrix<M, N>::begin() {
     return std::begin(rows);
 }
 
 template<std::size_t M, std::size_t N>
-Vector<N> & Matrix<M, N>::end() {
+Vector<N> * Matrix<M, N>::end() {
     return std::end(rows);
 }
