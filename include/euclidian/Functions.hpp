@@ -67,6 +67,7 @@ Matrix<M - 1, N - 1> sub(Matrix<M, N> const & matrix, std::size_t i, std::size_t
     Matrix<M - 1, N - 1> sub_matrix;
 
     for (std::size_t m = 0; m < i; m++) {
+
         for (std::size_t n = 0; n < j; n++) {
             sub_matrix[m][n] = matrix[m][n];
         }
@@ -135,28 +136,31 @@ std::optional<Matrix<N>> inverse(Matrix<N> const & matrix) {
          }};
     }
 
-    Matrix<N> inverse;
-    for (std::size_t m = 0; m < N; m++) {
-        for (std::size_t n = 0; n < N; n++) {
-            inverse[m][n] = determinant(sub(matrix, m, n));
-        }
-    }
+    if constexpr (N > 2) {
 
-    for (std::size_t m = 0; m < N; m++) {
-        for (std::size_t n = 0; n < N; n++) {
-            std::size_t i = m * N + n;
-            if (i % 2 == 1) {
-                inverse[m][n] *= -1.0f;
+        Matrix<N> inverse;
+        for (std::size_t m = 0; m < N; m++) {
+            for (std::size_t n = 0; n < N; n++) {
+                inverse[m][n] = determinant(sub(matrix, m, n));
             }
         }
+
+        for (std::size_t m = 0; m < N; m++) {
+            for (std::size_t n = 0; n < N; n++) {
+                std::size_t i = m * N + n;
+                if (i % 2 == 1) {
+                    inverse[m][n] *= -1.0f;
+                }
+            }
+        }
+
+        float det = 0.0f;
+        for (std::size_t n = 0; n < N; n++) {
+            det += matrix[0][n] * inverse[0][n];
+        }
+
+        inverse = transpose(inverse);
+
+        return inverse / det;
     }
-
-    float det = 0.0f;
-    for (std::size_t n = 0; n < N; n++) {
-        det += matrix[0][n] * inverse[0][n];
-    }
-
-    inverse = transpose(inverse);
-
-    return inverse / det;
 }
