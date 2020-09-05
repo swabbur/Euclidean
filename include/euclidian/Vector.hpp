@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <functional>
+#include <random>
 
 template<std::size_t N>
 class Vector {
@@ -23,6 +24,14 @@ class Vector {
     Vector<N> & apply(Vector<N> const & vector, std::function<float(float, float)> const & function) const;
 
 public:
+
+    static Vector<N> zeros();
+
+    static Vector<N> ones();
+
+    static Vector<N> random(std::uint32_t seed);
+
+    static Vector<N> random();
 
     template<typename ... Arguments>
     Vector(Arguments const & ... arguments);
@@ -94,6 +103,36 @@ struct Vector<N>::Filler<OFFSET, Vector<M>, Arguments ...> {
         Filler<OFFSET + M, Arguments ...>::fill(vector, arguments ...);
     }
 };
+
+template<std::size_t N>
+Vector<N> Vector<N>::zeros() {
+    return Vector<N>();
+}
+
+template<std::size_t N>
+Vector<N> Vector<N>::ones() {
+    Vector<N> filled;
+    std::fill(std::begin(filled), std::end(filled), 1.0f);
+    return filled;
+}
+
+template<std::size_t N>
+Vector<N> Vector<N>::random(std::uint32_t seed) {
+    Vector<N> generated;
+    std::mt19937 generator(seed);
+    std::uniform_real_distribution distribution;
+    std::generate(std::begin(generated), std::end(generated), [&distribution, &generator](){
+        return distribution(generator);
+    });
+    return generated;
+}
+
+template<std::size_t N>
+Vector<N> Vector<N>::random() {
+    std::random_device device;
+    std::uint32_t seed = device();
+    return random(seed);
+}
 
 template<std::size_t N>
 Vector<N> Vector<N>::map(std::function<float(float)> const & function) const {
