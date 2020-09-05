@@ -1,4 +1,4 @@
-#include "Assertions.h"
+#include "Assertions.hpp"
 
 void assert_false(bool expression) {
     ASSERT_FALSE(expression) << "Expected expression to be false";
