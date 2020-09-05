@@ -22,6 +22,7 @@ if (EUCLIDIAN_BUILD_TESTS)
 
     add_executable(EuclidianTest
             tests/euclidian/Assertions.cpp
+            tests/euclidian/FunctionsTest.cpp
             tests/euclidian/MatrixTest.cpp
             tests/euclidian/VectorTest.cpp)
 

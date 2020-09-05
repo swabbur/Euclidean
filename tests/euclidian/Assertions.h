@@ -5,6 +5,8 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
+void assert_false(bool expression);
+
 void assert_nan(float scalar);
 
 void assert_inf(float scalar);

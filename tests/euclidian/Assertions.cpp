@@ -1,5 +1,9 @@
 #include "Assertions.h"
 
+void assert_false(bool expression) {
+    ASSERT_FALSE(expression) << "Expected expression to be false";
+}
+
 void assert_nan(float scalar) {
     ASSERT_TRUE(std::isnan(scalar)) << "Expected component to be 'nan'";
 }
