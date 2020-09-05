@@ -1,4 +1,4 @@
-#include "Assertions.h"
+#include "Assertions.hpp"
 
 TEST(Matrix, Identity) {
 

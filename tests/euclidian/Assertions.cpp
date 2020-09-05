@@ -1,4 +1,4 @@
-#include "Assertions.h"
+#include "Assertions.hpp"
 
 void assert_nan(float scalar) {
     ASSERT_TRUE(std::isnan(scalar)) << "Expected component to be 'nan'";
