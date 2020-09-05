@@ -1,5 +1,5 @@
 #include <euclidian/Functions.hpp>
-#include "Assertions.h"
+#include "Assertions.hpp"
 
 TEST(Functions, Transpose) {
 

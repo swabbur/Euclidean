@@ -6,7 +6,6 @@
 #include <cmath>
 #include <numeric>
 #include <optional>
-#include <iostream>
 
 template<std::size_t M, std::size_t N>
 Matrix<N, M> transpose(Matrix<M, N> const & matrix) {
