@@ -1,5 +1,25 @@
 #include "Assertions.hpp"
 
+TEST(Matrix, Zeros) {
+
+    Matrix<2, 2> matrix = Matrix<2, 2>::zeros();
+
+    assert_matrix(matrix, {
+        0.0f, 0.0f,
+        0.0f, 0.0f
+    });
+}
+
+TEST(Matrix, Ones) {
+
+    Matrix<2, 2> matrix = Matrix<2, 2>::ones();
+
+    assert_matrix(matrix, {
+        1.0f, 1.0f,
+        1.0f, 1.0f
+    });
+}
+
 TEST(Matrix, Identity) {
 
     Matrix<2, 2> matrix = Matrix<2, 2>::identity();

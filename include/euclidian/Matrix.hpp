@@ -135,7 +135,7 @@ Matrix<M, N> & Matrix<M, N>::apply(Matrix<M, N> const & matrix, std::function<fl
 
 template<std::size_t M, std::size_t N>
 Matrix<M, N> Matrix<M, N>::zeros() {
-    return Vector<N>();
+    return Matrix<M, N>();
 }
 
 template<std::size_t M, std::size_t N>
