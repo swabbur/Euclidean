@@ -33,7 +33,7 @@ public:
     static Matrix<M, N> random();
 
     template<typename ... Arguments>
-    Matrix(Arguments ... arguments);
+    Matrix(Arguments ... arguments); // NOLINT(google-explicit-constructor)
 
     [[nodiscard]] Vector<N> const & operator [] (std::size_t index) const;
 

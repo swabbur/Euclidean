@@ -34,7 +34,7 @@ public:
     static Vector<N> random();
 
     template<typename ... Arguments>
-    Vector(Arguments const & ... arguments);
+    Vector(Arguments const & ... arguments); // NOLINT(google-explicit-constructor)
 
     [[nodiscard]] float operator [] (std::size_t index) const;
 
