@@ -41,7 +41,7 @@ if (EUCLIDIAN_BUILD_BENCHMARKS)
     find_package(benchmark REQUIRED)
 
     add_executable(EuclidianBenchmark
-            benchmarks/VectorBenchmark.cpp)
+            benchmarks/euclidian/VectorBenchmark.cpp)
 
     target_link_libraries(EuclidianBenchmark Euclidian benchmark::benchmark benchmark::benchmark_main Threads::Threads)
 endif()
