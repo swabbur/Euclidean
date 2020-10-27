@@ -5,6 +5,8 @@
 !.gitignore
 
 # Include the header, documentation, and cmake files
+!benchmarks/
+!benchmarks/**/*
 !doc/
 !doc/**/*
 !include/

@@ -10,7 +10,7 @@ include(CMakeDependentOption)
 
 cmake_dependent_option(
         EUCLIDIAN_BUILD_TESTS
-        "Enable ${PROJECT_NAME} project tests targets" ON
+        "Enable ${PROJECT_NAME} project tests" ON
         "BUILD_TESTING" OFF)
 
 if (EUCLIDIAN_BUILD_TESTS)
@@ -28,4 +28,20 @@ if (EUCLIDIAN_BUILD_TESTS)
 
     target_link_libraries(EuclidianTest Euclidian GTest::GTest GTest::Main)
     gtest_discover_tests(EuclidianTest)
+endif()
+
+cmake_dependent_option(
+        EUCLIDIAN_BUILD_BENCHMARKS
+        "Enable ${PROJECT_NAME} project benchmarks" ON
+        "BUILD_BENCHMARKING" OFF)
+
+if (EUCLIDIAN_BUILD_BENCHMARKS)
+
+    find_package(Threads REQUIRED)
+    find_package(benchmark REQUIRED)
+
+    add_executable(EuclidianBenchmark
+            benchmarks/VectorBenchmark.cpp)
+
+    target_link_libraries(EuclidianBenchmark Euclidian benchmark::benchmark benchmark::benchmark_main Threads::Threads)
 endif()

@@ -1,5 +1,9 @@
 #include "Assertions.hpp"
 
+TEST(Vector, Alias) {
+    Vector<3> vector;
+}
+
 TEST(Vector, Zeros) {
 
     Vector<3> vector = Vector<3>::zeros();
