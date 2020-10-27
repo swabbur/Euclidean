@@ -1,7 +1,7 @@
 #pragma once
 
-#include <euclidian/Matrix.hpp>
-#include <euclidian/Vector.hpp>
+#include <euclidean/Matrix.hpp>
+#include <euclidean/Vector.hpp>
 #include <gtest/gtest.h>
 #include <cmath>
 

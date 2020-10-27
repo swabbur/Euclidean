@@ -1,4 +1,4 @@
-#include <euclidian/Functions.hpp>
+#include <euclidean/Functions.hpp>
 #include "Assertions.hpp"
 
 TEST(Functions, Transpose) {

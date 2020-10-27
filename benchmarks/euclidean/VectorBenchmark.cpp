@@ -1,11 +1,11 @@
 #include <benchmark/benchmark.h>
-#include <euclidian/Vector.hpp>
+#include <euclidean/Vector.hpp>
 
 #define BENCHMARK_VECTORS(benchmark) \
 BENCHMARK_TEMPLATE(benchmark, 1); \
 BENCHMARK_TEMPLATE(benchmark, 2); \
 BENCHMARK_TEMPLATE(benchmark, 3); \
-BENCHMARK_TEMPLATE(benchmark, 4);
+BENCHMARK_TEMPLATE(benchmark, 4)
 
 #define BENCHMARK_VECTOR_BINARY(name, operation) \
 template<std::size_t N> \

@@ -34,4 +34,4 @@ jobs:
         make
         
     - name: Run tests
-      run: ./EuclidianTest
+      run: ./EuclideanTest
