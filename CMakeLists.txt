@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.13)
 project(Euclidean VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+include(CMakeDependentOption)
 
 add_library(Euclidean INTERFACE)
-target_include_directories(Euclidean INTERFACE include/)
-
-include(CMakeDependentOption)
+target_include_directories(Euclidean INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
 
 cmake_dependent_option(
         EUCLIDEAN_BUILD_TESTS
@@ -45,3 +46,7 @@ if (EUCLIDEAN_BUILD_BENCHMARKS)
 
     target_link_libraries(EuclideanBenchmark Euclidean benchmark::benchmark benchmark::benchmark_main Threads::Threads)
 endif()
+
+install(TARGETS Euclidean EXPORT Euclidean PUBLIC_HEADER INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY include/euclidean DESTINATION include)
+install(EXPORT Euclidean DESTINATION lib/cmake/Euclidean FILE EuclideanConfig.cmake)
