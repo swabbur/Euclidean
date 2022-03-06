@@ -1,9 +1,9 @@
 [requires]
-gtest/cci.20210126
-benchmark/1.6.0
+catch2/2.13.8
 
 [generators]
 cmake
 
 [options]
-gtest:build_gmock=False
+catch2:with_main=True
+catch2:with_benchmark=True
