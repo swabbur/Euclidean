@@ -4,11 +4,11 @@ on:
   
   push:
     branches:
-      - master
+      - main
 
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
 
@@ -17,21 +17,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     
-    - uses: actions/checkout@v2
-    
     - name: Install APT dependencies
-      run: sudo apt install libgtest-dev build-essential cmake
-      
-    - name: Build and install GTest
+      run: sudo apt install build-essential cmake python pip
+
+    - name: Install conan
+      run: pip install conan
+
+    - name: Configure conan compiler
       run: |
-        cd /usr/src/googletest
-        sudo cmake .
-        sudo cmake --build . --target install
-        
+        conan profile new default --detect
+        conan profile update settings.compiler.libcxx=libstdc++11 default
+
+    - uses: actions/checkout@v2
+
     - name: Build tests
       run: |
         cmake -DBUILD_TESTING=ON .
         make
         
     - name: Run tests
-      run: ./EuclideanTest
+      run: ~/work/Euclidean/Euclidean/bin/EuclideanTest

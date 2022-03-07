@@ -1,0 +1,9 @@
+[requires]
+catch2/2.13.8
+
+[generators]
+cmake
+
+[options]
+catch2:with_main=True
+catch2:with_benchmark=True

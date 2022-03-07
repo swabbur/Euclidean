@@ -1,52 +1,56 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.18)
 project(Euclidean VERSION 1.0.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+# Configure CMake
+set(CMAKE_CXX_STANDARD 20)
 include(CMakeDependentOption)
 
+# Create library
 add_library(Euclidean INTERFACE)
 target_include_directories(Euclidean INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
+# Disable tests by default
 cmake_dependent_option(
         EUCLIDEAN_BUILD_TESTS
         "Enable ${PROJECT_NAME} project tests" ON
         "BUILD_TESTING" OFF)
 
-if (EUCLIDEAN_BUILD_TESTS)
-
-    enable_testing()
-
-    find_package(GTest REQUIRED)
-    include(GoogleTest REQUIRED)
-
-    add_executable(EuclideanTest
-            tests/euclidean/Assertions.cpp
-            tests/euclidean/FunctionsTest.cpp
-            tests/euclidean/MatrixTest.cpp
-            tests/euclidean/VectorTest.cpp)
-
-    target_link_libraries(EuclideanTest Euclidean GTest::GTest GTest::Main)
-    gtest_discover_tests(EuclideanTest)
-endif()
-
+# Disable benchmarks by default
 cmake_dependent_option(
         EUCLIDEAN_BUILD_BENCHMARKS
         "Enable ${PROJECT_NAME} project benchmarks" ON
         "BUILD_BENCHMARKING" OFF)
 
-if (EUCLIDEAN_BUILD_BENCHMARKS)
+# Load catch2 via conan
+if (EUCLIDEAN_BUILD_TESTS OR EUCLIDEAN_BUILD_BENCHMARKS)
 
-    find_package(Threads REQUIRED)
-    find_package(benchmark REQUIRED)
+    # Download cmake conan utility
+    if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+        message(STATUS "Downloading conan CMake utility")
+        file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
+    endif()
 
-    add_executable(EuclideanBenchmark
-            benchmarks/euclidean/VectorBenchmark.cpp)
+    # Install libraries
+    include("${CMAKE_BINARY_DIR}/conan.cmake")
+    conan_cmake_install(PATH_OR_REFERENCE "${CMAKE_CURRENT_LIST_DIR}" BUILD missing)
 
-    target_link_libraries(EuclideanBenchmark Euclidean benchmark::benchmark benchmark::benchmark_main Threads::Threads)
+    # Include libraries as cmake packages
+    include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+    conan_basic_setup(TARGETS)
 endif()
 
-install(TARGETS Euclidean EXPORT Euclidean PUBLIC_HEADER INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(DIRECTORY include/euclidean DESTINATION include)
-install(EXPORT Euclidean DESTINATION lib/cmake/Euclidean FILE EuclideanConfig.cmake)
+# Build tests
+if (EUCLIDEAN_BUILD_TESTS)
+    file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/tests/*.cpp")
+    add_executable(EuclideanTest ${TEST_SOURCES})
+    target_link_libraries(EuclideanTest Euclidean CONAN_PKG::catch2)
+endif()
+
+# Build benchmarks
+if (EUCLIDEAN_BUILD_BENCHMARKS)
+    file(GLOB_RECURSE BENCHMARK_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/benchmarks/*.cpp")
+    add_executable(EuclideanBenchmark ${BENCHMARK_SOURCES})
+    target_link_libraries(EuclideanBenchmark Euclidean CONAN_PKG::catch2)
+endif()
