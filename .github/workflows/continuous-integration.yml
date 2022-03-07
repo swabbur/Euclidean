@@ -35,4 +35,4 @@ jobs:
         make
         
     - name: Run tests
-      run: ./EuclideanTest
+      run: /home/runner/work/Euclidean/Euclidean/EuclideanTest
