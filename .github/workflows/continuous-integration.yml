@@ -36,4 +36,4 @@ jobs:
         make
         
     - name: Run tests
-      run: ls ~/work/Euclidean
+      run: ls ~/work/Euclidean/Euclidean
