@@ -3,6 +3,8 @@
 
 int main() {
 
+    Vector<int, 0> test;
+
     Vector<int, 5> a = { 1 , 2, Vector<int, 2>(3, 4), std::array<int, 1>{5} };
     a = { 2, 3, 4, 5, 6 };
     std::ranges::for_each(a, [](auto const & component) {
