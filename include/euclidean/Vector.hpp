@@ -3,273 +3,262 @@
 #include <algorithm>
 #include <array>
 #include <functional>
-#include <random>
+#include <numeric>
+#include <ranges>
 
-template<std::size_t N>
+template<std::semiregular Component, std::size_t SIZE>
 class Vector {
 
-    template<std::size_t OFFSET, typename ... Arguments>
-    struct Filler;
+    template<typename>
+    struct Size;
 
-    std::array<float, N> components;
+    template<template <typename, std::size_t> typename Container, std::convertible_to<Component> C, std::size_t S>
+    struct Size<Container<C, S>> {
+        static constexpr std::size_t VALUE = S;
+    };
 
-    [[nodiscard]] Vector<N> map(std::function<float(float)> const & function) const;
+    template<std::convertible_to<Component> C>
+    struct Size<C> {
+        static constexpr std::size_t VALUE = 1;
+    };
 
-    [[nodiscard]] Vector<N> map(float scalar, std::function<float(float, float)> const & function) const;
+    template<typename ... Values>
+    static constexpr std::size_t COUNT = (0 + ... + Size<std::remove_cvref_t<Values>>::VALUE);
 
-    [[nodiscard]] Vector<N> map(Vector<N> const & vector, std::function<float(float, float)> const & function) const;
 
-    Vector<N> & apply(float scalar, std::function<float(float, float)> const & function) const;
+    template<std::input_iterator Iterator, std::ranges::range Range>
+    static constexpr auto add(Iterator iterator, Range const & range) noexcept {
+        return std::copy(std::begin(range), std::end(range), iterator);
+    }
 
-    Vector<N> & apply(Vector<N> const & vector, std::function<float(float, float)> const & function) const;
+    template<std::input_iterator Iterator, std::convertible_to<Component> Value>
+    static constexpr auto add(Iterator iterator, Value const & value) noexcept {
+        *iterator = value;
+        return std::next(iterator);
+    }
+
+    std::array<Component, SIZE> components;
 
 public:
 
-    static Vector<N> zeros();
+    [[nodiscard]] constexpr Vector() noexcept : components{} {}
 
-    static Vector<N> ones();
+    template<typename ... Values>
+    requires (COUNT<Values ...> == SIZE)
+    [[nodiscard]] constexpr Vector(Values && ... values) noexcept : components() { // NOLINT(google-explicit-constructor)
+        auto iterator = std::begin(components);
+        ((iterator = add(iterator, values)), ...);
+    }
 
-    static Vector<N> random(std::uint32_t seed);
+    template<typename T = Component, typename = std::enable_if_t<std::is_same_v<T, bool>>>
+    [[nodiscard]] constexpr explicit operator bool () const noexcept {
+        return std::all_of(std::begin(components), std::end(components), [](auto const & component){
+            return component;
+        });
+    }
 
-    static Vector<N> random();
+    [[nodiscard]] constexpr auto & operator [] (std::size_t index) const noexcept {
+        return components[index];
+    }
 
-    template<typename ... Arguments>
-    Vector(Arguments const & ... arguments); // NOLINT(google-explicit-constructor)
+    [[nodiscard]] constexpr auto & operator [] (std::size_t index) noexcept {
+        return components[index];
+    }
 
-    [[nodiscard]] float operator [] (std::size_t index) const;
+    [[nodiscard]] constexpr auto begin() const noexcept {
+        return std::cbegin(components);
+    }
 
-    float & operator [] (std::size_t index);
+    [[nodiscard]] constexpr auto end() const noexcept {
+        return std::cend(components);
+    }
 
-    [[nodiscard]] Vector<N> operator - () const;
+    [[nodiscard]] constexpr auto begin() noexcept {
+        return std::begin(components);
+    }
 
-    [[nodiscard]] Vector<N> operator + (Vector<N> const & vector) const;
-
-    [[nodiscard]] Vector<N> operator - (Vector<N> const & vector) const;
-
-    [[nodiscard]] Vector<N> operator * (Vector<N> const & vector) const;
-
-    [[nodiscard]] Vector<N> operator / (Vector<N> const & vector) const;
-
-    [[nodiscard]] Vector<N> operator * (float scalar) const;
-
-    [[nodiscard]] Vector<N> operator / (float scalar) const;
-
-    Vector<N> & operator += (Vector<N> const & vector);
-
-    Vector<N> & operator -= (Vector<N> const & vector);
-
-    Vector<N> & operator *= (Vector<N> const & vector);
-
-    Vector<N> & operator /= (Vector<N> const & vector);
-
-    Vector<N> & operator *= (float scalar);
-
-    Vector<N> & operator /= (float scalar);
-
-    [[nodiscard]] float const * begin() const;
-
-    [[nodiscard]] float const * end() const;
-
-    float * begin();
-
-    float * end();
-};
-
-template<std::size_t N>
-template<std::size_t OFFSET, typename ... Arguments>
-struct Vector<N>::Filler {
-
-    static void fill(Vector<N> & vector) {
-        static_assert(OFFSET == N, "Incorrect number of arguments provided");
+    [[nodiscard]] constexpr auto end() noexcept {
+        return std::end(components);
     }
 };
 
-template<std::size_t N>
-template<std::size_t OFFSET, typename ... Arguments>
-struct Vector<N>::Filler<OFFSET, float, Arguments ...> {
+// Structured binding decomposition
 
-    static void fill(Vector<N> & vector, float component, Arguments const & ... arguments) {
-        vector[OFFSET] = component;
-        Filler<OFFSET + 1, Arguments ...>::fill(vector, arguments ...);
-    }
-};
+namespace std {
 
-template<std::size_t N>
-template<std::size_t OFFSET, std::size_t M, typename ... Arguments>
-struct Vector<N>::Filler<OFFSET, Vector<M>, Arguments ...> {
+    template<std::semiregular Type, std::size_t SIZE>
+    struct tuple_size<Vector<Type, SIZE>> : integral_constant<std::size_t, SIZE> {};
 
-    static void fill(Vector<N> & vector, Vector<M> const & components, Arguments const & ... arguments) {
-        std::move(std::begin(components), std::end(components), std::next(std::begin(vector), OFFSET));
-        Filler<OFFSET + M, Arguments ...>::fill(vector, arguments ...);
-    }
-};
-
-template<std::size_t N>
-Vector<N> Vector<N>::zeros() {
-    return Vector<N>();
+    template<std::size_t INDEX, std::semiregular Type, std::size_t SIZE>
+    struct tuple_element<INDEX, Vector<Type, SIZE>> {
+        using type = Type;
+    };
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::ones() {
-    Vector<N> filled;
-    std::fill(std::begin(filled), std::end(filled), 1.0f);
-    return filled;
+template<std::size_t INDEX, std::semiregular Type, std::size_t SIZE>
+auto get(Vector<Type, SIZE> const & vector) {
+    return vector[INDEX];
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::random(std::uint32_t seed) {
-    Vector<N> generated;
-    std::mt19937 generator(seed);
-    std::uniform_real_distribution distribution;
-    std::generate(std::begin(generated), std::end(generated), [&distribution, &generator](){
-        return distribution(generator);
-    });
-    return generated;
+template<std::size_t INDEX, std::semiregular Type, std::size_t SIZE>
+auto get(Vector<Type, SIZE> & vector) {
+    return vector[INDEX];
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::random() {
-    std::random_device device;
-    std::uint32_t seed = device();
-    return random(seed);
-}
+// Functional functions
 
-template<std::size_t N>
-Vector<N> Vector<N>::map(std::function<float(float)> const & function) const {
-    Vector<N> result;
-    std::transform(begin(), end(), std::begin(result), function);
+template<typename Operator, typename Component, std::size_t SIZE>
+requires requires (Component const & component) {
+    { Operator()(component) };
+}
+[[nodiscard]] constexpr auto map(Vector<Component, SIZE> const & vector) {
+    Vector<decltype(Operator()(std::declval<Component>())), SIZE> result;
+    std::transform(std::begin(vector), std::end(vector), std::begin(result), Operator());
     return result;
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::map(float scalar, std::function<float(float, float)> const & function) const {
-    Vector<N> result;
-    std::transform(begin(), end(), std::begin(result), [scalar, &function](float component){
-        return function(component, scalar);
+template<typename Operator, typename LHS, typename RHS, std::size_t SIZE>
+requires requires (LHS const & lhs, RHS const & rhs) {
+    { Operator()(lhs, rhs) };
+}
+[[nodiscard]] constexpr auto map(Vector<LHS, SIZE> const & lhs, RHS const & rhs) {
+    Vector<decltype(Operator()(std::declval<LHS>(), std::declval<RHS>())), SIZE> result;
+    std::transform(std::begin(lhs), std::end(lhs), std::begin(result), [&rhs](auto const & component) {
+        return Operator()(component, rhs);
     });
     return result;
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::map(Vector<N> const & vector, std::function<float(float, float)> const & function) const {
-    Vector<N> result;
-    std::transform(begin(), end(), std::begin(vector), std::begin(result), function);
+template<typename Operator, typename RHS, typename LHS, std::size_t SIZE>
+requires requires (RHS const & lhs, LHS const & rhs) {
+    { Operator()(lhs, rhs) };
+}
+[[nodiscard]] constexpr auto map(LHS const & test, Vector<RHS, SIZE> const & rhs) {
+    Vector<decltype(Operator()(std::declval<LHS>(), std::declval<RHS>())), SIZE> result;
+    std::transform(std::begin(rhs), std::end(rhs), std::begin(result), [&test](auto const & component) {
+        return Operator()(test, component);
+    });
     return result;
 }
 
-template<std::size_t N>
-Vector<N> & Vector<N>::apply(float scalar, std::function<float(float, float)> const & function) const {
-    std::transform(begin(), end(), begin(), [scalar, &function](float component){
-        return function(component, scalar);
-    });
-    return *this;
+template<typename Operator, typename LHS, typename RHS, std::size_t SIZE>
+requires requires (LHS const & lhs, RHS const & rhs) {
+    { Operator()(lhs, rhs) };
+}
+[[nodiscard]] constexpr auto map(Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    Vector<decltype(Operator()(std::declval<LHS>(), std::declval<RHS>())), SIZE> result;
+    std::transform(std::begin(lhs), std::end(lhs), std::begin(rhs), std::begin(result), Operator());
+    return result;
 }
 
-template<std::size_t N>
-Vector<N> & Vector<N>::apply(Vector<N> const & vector, std::function<float(float, float)> const & function) const {
-    std::transform(begin(), end(), std::begin(vector), begin(), function);
-    return *this;
+// Math functions
+
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto dot(Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return std::transform_reduce(std::begin(lhs), std::end(lhs), std::begin(rhs), std::common_type_t<LHS, RHS>{});
 }
 
-template<std::size_t N>
-template<typename ... Arguments>
-Vector<N>::Vector(Arguments const & ... arguments): components{} {
-    if constexpr (sizeof ... (Arguments) > 0) {
-        Filler<0, Arguments ...>::fill(*this, arguments ...);
-    }
+template<typename LHS, typename RHS>
+[[nodiscard]] constexpr auto cross(Vector<LHS, 3> const & lhs, Vector<RHS, 3> const & rhs) {
+    // TODO: Implement.
 }
 
-template<std::size_t N>
-float Vector<N>::operator [] (std::size_t index) const {
-    return components[index];
+// Element-wise operations
+
+template<typename Component, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator - (Vector<Component, SIZE> const & vector) {
+    return map<std::negate<>, Component, SIZE>(vector);
 }
 
-template<std::size_t N>
-float & Vector<N>::operator [] (std::size_t index) {
-    return components[index];
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator + (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::plus<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::operator - () const {
-    return map(std::negate<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator - (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::minus<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::operator + (Vector<N> const & vector) const {
-    return map(vector, std::plus<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator * (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::multiplies<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::operator - (Vector<N> const & vector) const {
-    return map(vector, std::minus<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator / (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::divides<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::operator * (Vector<N> const & vector) const {
-    return map(vector, std::multiplies<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator % (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::modulus<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::operator / (Vector<N> const & vector) const {
-    return map(vector, std::divides<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator == (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::equal_to<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::operator * (float scalar) const {
-    return map(scalar, std::multiplies<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator != (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::not_equal_to<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> Vector<N>::operator / (float scalar) const {
-    return map(scalar, std::divides<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator > (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::greater<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> & Vector<N>::operator += (Vector<N> const & vector) {
-    return apply(vector, std::plus<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator < (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::less<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> & Vector<N>::operator -= (Vector<N> const & vector) {
-    return apply(vector, std::minus<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator >= (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::greater_equal<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> & Vector<N>::operator *= (Vector<N> const & vector) {
-    return apply(vector, std::multiplies<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator <= (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::less_equal<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> & Vector<N>::operator /= (Vector<N> const & vector) {
-    return apply(vector, std::divides<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator && (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::logical_and<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> & Vector<N>::operator *= (float scalar) {
-    return apply(scalar, std::multiplies<>());
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator || (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::logical_or<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-Vector<N> & Vector<N>::operator /= (float scalar) {
-    return apply(scalar, std::divides<>());
+template<typename Component, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator ! (Vector<Component, SIZE> const & vector) {
+    return map<std::logical_not<>, Component, SIZE>(vector);
 }
 
-template<std::size_t N>
-float const * Vector<N>::begin() const {
-    return std::begin(components);
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator & (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::bit_and<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-float const * Vector<N>::end() const {
-    return std::end(components);
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator | (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::bit_or<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-float * Vector<N>::begin() {
-    return std::begin(components);
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator ^ (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return map<std::bit_xor<>, LHS, RHS, SIZE>(lhs, rhs);
 }
 
-template<std::size_t N>
-float * Vector<N>::end() {
-    return std::end(components);
+template<typename Component, std::size_t SIZE>
+[[nodiscard]] constexpr auto operator ~ (Vector<Component, SIZE> const & vector) {
+    return map<std::bit_not<>, Component, SIZE>(vector);
 }
+
+// Scalar operations
+

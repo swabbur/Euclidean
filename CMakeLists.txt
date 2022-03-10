@@ -11,6 +11,10 @@ target_include_directories(Euclidean INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
+# Create example executable
+add_executable(EuclideanExample src/Main.cpp)
+target_link_libraries(EuclideanExample Euclidean)
+
 # Disable tests by default
 cmake_dependent_option(
         EUCLIDEAN_BUILD_TESTS
