@@ -1,6 +1,8 @@
 #include <euclidean/Vector.hpp>
 #include <iostream>
 
+using Euclidean::Vector;
+
 int main() {
 
     Vector<int, 0> test;

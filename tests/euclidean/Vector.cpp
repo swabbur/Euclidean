@@ -1,6 +1,9 @@
 #include <catch2/catch.hpp>
 #include <euclidean/Vector.hpp>
 
+// TODO: Write tests.
+// TODO: Write documentation.
+
 //TEST_CASE("Vector default construction") {
 //    Vector<int, 3> vector;
 //    REQUIRE(vector[0] == Approx(0));
