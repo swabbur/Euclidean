@@ -11,7 +11,7 @@ Do not forget to pass CMake the `-DBUILD_TESTING=ON` option to enable unit testi
 ### Composition
 Composition constructors make it a lot easier to construct larger and more complex vectors from smaller ones.
 ```cpp
-Vector<5> vector(1.0f, 2.0f, Vector<2>(3.0f, 4.0f), 5.0f);
+Vector<float, 5> vector(1.0f, 2.0f, Vector<float, 2>(3.0f, 4.0f), 5.0f);
 ```
 
 ### STL Compatibility
@@ -24,7 +24,7 @@ std::fill(std::begin(vector), std::end(vector), 1.0f);
 ### Implicit Constructors
 Implicit constructors allow for readable vector and matrix definitions.
 ```cpp
-Matrix<3, 3> matrix = {
+Matrix<float, 3, 3> matrix = {
         1.0f, 2.0f, 3.0f,
         4.0f, 5.0f, 6.0f,
         7.0f, 8.0f, 9.0f
