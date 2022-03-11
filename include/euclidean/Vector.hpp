@@ -8,10 +8,12 @@
 
 // TODO: Add specialization of SIZE = std::dynamic_extent where Vector stores data on the heap.
 // TODO: Differentiate between column and row vectors, thus introducing the concept of a transpose and outer product.
-// TODO: Add factory methods for generating vectors of zeros, ones, or random components.
+// TODO: Add factory methods for generating vectors of zeros, ones, or random components and unit vectors.
 // TODO: Differentiate between free vectors and bound vectors to make geometric functions more intuitive and safe.
 // TODO: Add explicit casts to a single component, a tuple, an array, a vector, and a span.
 // TODO: Differentiate between vectors and unit vectors.
+// TODO: Create specialization for gradient vectors.
+// TODO: Add definitions for the base/unit vectors x, y, and z.
 
 /**
  * An array type with specialized constructors (default and composition) and (element-wise- and scalar-) operators.
@@ -374,14 +376,21 @@ template<typename LHS, typename RHS>
 
 // Geometric functions
 
-// magnitude, length
-// direction (unit, normal)
-// distance
-// difference, displacement
+    // Utility:
+    // - squared_length
+    // - length (magnitude)
+    // - normalize -> NOT in place
+    // - distance
 
-// translate
-// rotate
-// scale
-// shear
-// mirror
-// project
+    // Simple (should be implemented after matrices):
+    // - translate
+    // - rotate
+    // - scale
+    // - interpolate
+
+    // Advanced (should be implemented after matrices):
+    // - reflect
+    // - contract
+    // - dilate/expand
+    // - shear
+    // - project
