@@ -104,7 +104,7 @@ public:
     [[nodiscard]] constexpr Vector() noexcept : components{} {}
 
     /**
-     * Compose a sequence of values into a new vector.
+     * Compose a sequence of values into a vector.
      *
      * @tparam Values The types of values to compose.
      * @param values The values to compose.
@@ -179,9 +179,7 @@ auto get(Vector<Type, SIZE> & vector) {
 // Functional functions
 
 template<typename Operator, typename Component, std::size_t SIZE>
-requires requires (Component const & component) {
-    { Operator()(component) };
-}
+requires requires (Component const & component) { { Operator()(component) }; }
 [[nodiscard]] constexpr auto map(Vector<Component, SIZE> const & vector) {
     Vector<decltype(Operator()(std::declval<Component>())), SIZE> result;
     std::transform(std::begin(vector), std::end(vector), std::begin(result), Operator());
@@ -189,49 +187,17 @@ requires requires (Component const & component) {
 }
 
 template<typename Operator, typename LHS, typename RHS, std::size_t SIZE>
-requires requires (LHS const & lhs, RHS const & rhs) {
-    { Operator()(lhs, rhs) };
-}
-[[nodiscard]] constexpr auto map(Vector<LHS, SIZE> const & lhs, RHS const & rhs) {
-    Vector<decltype(Operator()(std::declval<LHS>(), std::declval<RHS>())), SIZE> result;
-    std::transform(std::begin(lhs), std::end(lhs), std::begin(result), [&rhs](auto const & component) {
-        return Operator()(component, rhs);
-    });
-    return result;
-}
-
-template<typename Operator, typename RHS, typename LHS, std::size_t SIZE>
-requires requires (RHS const & lhs, LHS const & rhs) {
-    { Operator()(lhs, rhs) };
-}
-[[nodiscard]] constexpr auto map(LHS const & test, Vector<RHS, SIZE> const & rhs) {
-    Vector<decltype(Operator()(std::declval<LHS>(), std::declval<RHS>())), SIZE> result;
-    std::transform(std::begin(rhs), std::end(rhs), std::begin(result), [&test](auto const & component) {
-        return Operator()(test, component);
-    });
-    return result;
-}
-
-template<typename Operator, typename LHS, typename RHS, std::size_t SIZE>
-requires requires (LHS const & lhs, RHS const & rhs) {
-    { Operator()(lhs, rhs) };
-}
+requires requires (LHS const & lhs, RHS const & rhs) { { Operator()(lhs, rhs) }; }
 [[nodiscard]] constexpr auto map(Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
     Vector<decltype(Operator()(std::declval<LHS>(), std::declval<RHS>())), SIZE> result;
     std::transform(std::begin(lhs), std::end(lhs), std::begin(rhs), std::begin(result), Operator());
     return result;
 }
 
-// Math functions
-
-template<typename LHS, typename RHS, std::size_t SIZE>
-[[nodiscard]] constexpr auto dot(Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
-    return std::transform_reduce(std::begin(lhs), std::end(lhs), std::begin(rhs), std::common_type_t<LHS, RHS>{});
-}
-
-template<typename LHS, typename RHS>
-[[nodiscard]] constexpr auto cross(Vector<LHS, 3> const & lhs, Vector<RHS, 3> const & rhs) {
-    // TODO: Implement.
+template<typename Operator, typename LHS, typename RHS, std::size_t SIZE>
+requires requires (LHS const & lhs, RHS const & rhs) { { Operator()(lhs, rhs) } -> std::convertible_to<LHS>; }
+constexpr void apply(Vector<LHS, SIZE> & lhs, Vector<RHS, SIZE> const & rhs) {
+    std::transform(std::begin(lhs), std::end(lhs), std::begin(rhs), std::begin(lhs), Operator());
 }
 
 // Element-wise operations
@@ -331,5 +297,70 @@ template<typename Component, std::size_t SIZE>
     return map<std::bit_not<>, Component, SIZE>(vector);
 }
 
+template<typename LHS, typename RHS, std::size_t SIZE>
+constexpr Vector<LHS, SIZE> & operator += (Vector<LHS, SIZE> & lhs, Vector<RHS, SIZE> const & rhs) {
+    apply<std::plus<>, LHS, RHS, SIZE>(lhs, rhs);
+    return lhs;
+}
+
+template<typename LHS, typename RHS, std::size_t SIZE>
+constexpr Vector<LHS, SIZE> & operator -= (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    apply<std::minus<>, LHS, RHS, SIZE>(lhs, rhs);
+    return lhs;
+}
+
+template<typename LHS, typename RHS, std::size_t SIZE>
+constexpr Vector<LHS, SIZE> & operator *= (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    apply<std::multiplies<>, LHS, RHS, SIZE>(lhs, rhs);
+    return lhs;
+}
+
+template<typename LHS, typename RHS, std::size_t SIZE>
+constexpr Vector<LHS, SIZE> & operator /= (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    apply<std::divides<>, LHS, RHS, SIZE>(lhs, rhs);
+    return lhs;
+}
+
+template<typename LHS, typename RHS, std::size_t SIZE>
+constexpr Vector<LHS, SIZE> & operator %= (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    apply<std::modulus<>, LHS, RHS, SIZE>(lhs, rhs);
+    return lhs;
+}
+
+template<typename LHS, typename RHS, std::size_t SIZE>
+constexpr Vector<LHS, SIZE> & operator &= (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    apply<std::bit_and<>, LHS, RHS, SIZE>(lhs, rhs);
+    return lhs;
+}
+
+template<typename LHS, typename RHS, std::size_t SIZE>
+constexpr Vector<LHS, SIZE> & operator |= (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    apply<std::bit_or<>, LHS, RHS, SIZE>(lhs, rhs);
+    return lhs;
+}
+
+template<typename LHS, typename RHS, std::size_t SIZE>
+constexpr Vector<LHS, SIZE> & operator ^= (Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    apply<std::bit_xor<>, LHS, RHS, SIZE>(lhs, rhs);
+    return lhs;
+}
+
 // Scalar operations
 
+// TODO: Create vector-component and component-vector functions (*, /, %, etc.).
+
+// Linear algebra functions
+
+template<typename LHS, typename RHS, std::size_t SIZE>
+[[nodiscard]] constexpr auto dot(Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
+    return std::transform_reduce(std::begin(lhs), std::end(lhs), std::begin(rhs), std::common_type_t<LHS, RHS>{});
+}
+
+template<typename LHS, typename RHS>
+[[nodiscard]] constexpr auto cross(Vector<LHS, 3> const & lhs, Vector<RHS, 3> const & rhs) {
+    return Vector<std::common_type_t<LHS, RHS>, 3>{
+            lhs[1] * rhs[2] - lhs[2] * rhs[1],
+            lhs[2] * rhs[0] - lhs[0] * rhs[2],
+            lhs[0] * rhs[1] - lhs[1] * rhs[0]
+    };
+}

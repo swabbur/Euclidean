@@ -12,6 +12,8 @@ int main() {
     });
     std::cout << std::endl;
 
+    a += a;
+
     std::ranges::for_each(a * -a, [](auto const & component) {
         std::cout << component << ' ';
     });
