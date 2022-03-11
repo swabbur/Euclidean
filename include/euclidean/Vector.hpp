@@ -6,8 +6,15 @@
 #include <numeric>
 #include <ranges>
 
+// TODO: Add specialization of SIZE = std::dynamic_extent where Vector stores data on the heap.
+// TODO: Differentiate between column and row vectors, thus introducing the concept of a transpose and outer product.
+// TODO: Add factory methods for generating vectors of zeros, ones, or random components.
+// TODO: Differentiate between free vectors and bound vectors to make geometric functions more intuitive and safe.
+// TODO: Add explicit casts to a single component, a tuple, an array, a vector, and a span.
+// TODO: Differentiate between vectors and unit vectors.
+
 /**
- * ...
+ * An array type with specialized constructors (default and composition) and (element-wise- and scalar-) operators.
  *
  * @tparam Component The type of components stored in the vector.
  * @tparam SIZE The size of the vector.
@@ -195,12 +202,12 @@ requires requires (LHS const & lhs, RHS const & rhs) { { Operator()(lhs, rhs) };
 }
 
 template<typename Operator, typename LHS, typename RHS, std::size_t SIZE>
-requires requires (LHS const & lhs, RHS const & rhs) { { Operator()(lhs, rhs) } -> std::convertible_to<LHS>; }
+requires requires (LHS & lhs, RHS const & rhs) { { Operator()(lhs, rhs) } -> std::convertible_to<LHS>; }
 constexpr void apply(Vector<LHS, SIZE> & lhs, Vector<RHS, SIZE> const & rhs) {
     std::transform(std::begin(lhs), std::end(lhs), std::begin(rhs), std::begin(lhs), Operator());
 }
 
-// Element-wise operations
+// Element-wise operations (most important: vector addition)
 
 template<typename Component, std::size_t SIZE>
 [[nodiscard]] constexpr auto operator - (Vector<Component, SIZE> const & vector) {
@@ -345,11 +352,11 @@ constexpr Vector<LHS, SIZE> & operator ^= (Vector<LHS, SIZE> const & lhs, Vector
     return lhs;
 }
 
-// Scalar operations
+// Scalar operations (most important: scalar multiplication)
 
 // TODO: Create vector-component and component-vector functions (*, /, %, etc.).
 
-// Linear algebra functions
+// Vector calculus
 
 template<typename LHS, typename RHS, std::size_t SIZE>
 [[nodiscard]] constexpr auto dot(Vector<LHS, SIZE> const & lhs, Vector<RHS, SIZE> const & rhs) {
@@ -364,3 +371,17 @@ template<typename LHS, typename RHS>
             lhs[0] * rhs[1] - lhs[1] * rhs[0]
     };
 }
+
+// Geometric functions
+
+// magnitude, length
+// direction (unit, normal)
+// distance
+// difference, displacement
+
+// translate
+// rotate
+// scale
+// shear
+// mirror
+// project
