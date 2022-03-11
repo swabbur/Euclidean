@@ -21,12 +21,6 @@ cmake_dependent_option(
         "Enable ${PROJECT_NAME} project tests" ON
         "BUILD_TESTING" OFF)
 
-# Disable benchmarks by default
-cmake_dependent_option(
-        EUCLIDEAN_BUILD_BENCHMARKS
-        "Enable ${PROJECT_NAME} project benchmarks" ON
-        "BUILD_BENCHMARKING" OFF)
-
 # Load catch2 via conan
 if (EUCLIDEAN_BUILD_TESTS OR EUCLIDEAN_BUILD_BENCHMARKS)
 
@@ -50,11 +44,4 @@ if (EUCLIDEAN_BUILD_TESTS)
     file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/tests/*.cpp")
     add_executable(EuclideanTest ${TEST_SOURCES})
     target_link_libraries(EuclideanTest Euclidean CONAN_PKG::catch2)
-endif()
-
-# Build benchmarks
-if (EUCLIDEAN_BUILD_BENCHMARKS)
-    file(GLOB_RECURSE BENCHMARK_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/benchmarks/*.cpp")
-    add_executable(EuclideanBenchmark ${BENCHMARK_SOURCES})
-    target_link_libraries(EuclideanBenchmark Euclidean CONAN_PKG::catch2)
 endif()

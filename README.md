@@ -1,8 +1,8 @@
 # Euclidean
 
-A header-only C++ library implementing linear algebra operations with compile-time constant dimensions using STL algorithms and template metaprogramming, build with [CMake](https://cmake.org/), tested and benchmarked with [Catch2](https://github.com/catchorg/Catch2) and styled based on the Pitchfork Layout ([PFL](https://github.com/vector-of-bool/pitchfork)) and the style guide for python code ([PEP8](https://www.python.org/dev/peps/pep-0008/)).
+A header-only C++ library implementing linear algebra operations with compile-time constant dimensions using STL algorithms and template metaprogramming, build with [CMake](https://cmake.org/), tested with [Catch2](https://github.com/catchorg/Catch2) and styled based on the Pitchfork Layout ([PFL](https://github.com/vector-of-bool/pitchfork)) and the style guide for python code ([PEP8](https://www.python.org/dev/peps/pep-0008/)).
 
-Do not forget to pass CMake the `-DBUILD_TESTING=ON` option to enable unit testing and the `-DBUILD_BENCHMARKING=ON` option to enable benchmarking.
+Do not forget to pass CMake the `-DBUILD_TESTING=ON` option to enable unit testing.
 
 ![Continuous Integration](https://github.com/swabbur/Euclidian/workflows/Continuous%20Integration/badge.svg)
 

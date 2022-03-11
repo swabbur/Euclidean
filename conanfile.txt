@@ -6,4 +6,3 @@ cmake
 
 [options]
 catch2:with_main=True
-catch2:with_benchmark=True
