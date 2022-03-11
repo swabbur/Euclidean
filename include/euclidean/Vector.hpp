@@ -17,12 +17,12 @@
 
 namespace Euclidean {
 
-/**
- * An array type with specialized constructors (default and composition) and (element-wise- and scalar-) operators.
- *
- * @tparam Component The type of components stored in the vector.
- * @tparam SIZE The size of the vector.
- */
+    /**
+     * An array type with specialized constructors (default and composition) and (element-wise- and scalar-) operators.
+     *
+     * @tparam Component The type of components stored in the vector.
+     * @tparam SIZE The size of the vector.
+     */
     template<std::semiregular Component, std::size_t SIZE>
     class Vector {
 
