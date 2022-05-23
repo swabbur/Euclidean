@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 project(Euclidean VERSION 1.0.0 LANGUAGES CXX)
 
 # Configure CMake
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 include(CMakeDependentOption)
 
 # Create library
@@ -22,7 +22,7 @@ cmake_dependent_option(
         "BUILD_TESTING" OFF)
 
 # Load catch2 via conan
-if (EUCLIDEAN_BUILD_TESTS OR EUCLIDEAN_BUILD_BENCHMARKS)
+if (EUCLIDEAN_BUILD_TESTS)
 
     # Download cmake conan utility
     if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")

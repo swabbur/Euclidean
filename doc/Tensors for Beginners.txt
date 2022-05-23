@@ -1,0 +1,166 @@
+Tensor definition 1: (Array definition)
+Multi-dimensional array of numbers (scalar, vector, matrix, ..., rank-n tensor).
+There is a metric tensor g_{mu, v} that is used in general relativity?
+"Wrong": It's a representation. They also have a geometric meaning.
+
+Tensor definition 2: (Geometric definition)
+An object that is invariant under a change of coordinates and has components that change is a special, predictable
+way under a change of coordinates. It's length, orientation, etc. are invariant. But, its components are not.
+"Better"
+
+Tensor definition 3: (Abstract definition)
+A collection of vectors and covectors combined using the tensor product.
+"Best"
+
+Forward & backward transformation:
+Build the new basis vectors from the old basis vectors. The transformation can be performed via a matrix F.
+Backwards is the same thing but the other way around (new to old) and stored in a matrix B.
+FB = I => Thus, F and B are each other's inverses.
+Kronecker Delta => delta_{i, k} = {i == k ? 1 : 0}
+
+Vector definition 1: (Array definition)
+- "A list of numbers.
+- Addition is element-wise.
+- Scaling with scalar is element-wise.
+"Wrong": The list of numbers are vector components! Vectors themselves are invariant.
+
+Vector definition 2: (geometric)
+- Arrow in space. No need for a coordinate system for addition and scaling.
+"Better": Easy to draw and visualize. However, only a representation of Euclidean vectors.
+
+Vector definition 3: (abstract)
+- Member of a Vector Space.
+- A vector space is (V, S, +, .)
+    - V = Set of Vectors
+    - S = Set of Scalars
+    - + = Vector addition rule
+    - . = Vector scaling rule
+
+Old basis to new basis is done via forward matrix, and vice versa.
+However, old components to new components requires backward matrix, and vice versa.
+Because: The change in basis vectors is opposite of the change in vector components.
+For example: When the basis grows, the vectors changed to it shrink (1 in basis 1 becomes a half in basis 2).
+Derivation: substitute the vector coefficients, and you'll see which transformation you need.
+Conclusion: Vectors/Vector components are contravariant.
+Note: Contravariant indices are general written in superscript.
+
+Covector initial intuition:
+- "basically a row vector"
+- Column and row vectors are fundamentally different: flipping a column vector to create a row vector is only
+  possible in an orthonormal basis (one where all the basis vectors are size one and orthogonal to each other).
+
+Covector definition:
+- A function on (column) vectors => producing real numbers from vector inputs => F:V->R.
+- f(v + w) = f(v) + f(w)
+- f(n * v) = n * f(v)
+Thus, covectors are linear functions.
+Note: We can visualize covectors as "topographic" maps (oriented stacks).
+The vector space consisting of all covectors of the vectors in a vector space is called the Dual Vector Space (V*, S, +', .').
+
+Covectors are, again, invariant. While its component are not.
+Covectors live in a vector space V*, not V. Thus, we cannot use e_1 and e_2 from V to represent their components.
+Instead, we create two special covectors (the epsilon covectors, or dual basis).  epsilon^i(e_j) = delta_{i, j}.
+Interpretation: They are projecting the components of e_i.
+They allow any covector to be expressed as a linear combination of the dual basis vectors (epsilon vectors).
+However, we can change basis here as well!
+Covectors are covariant, meaning we can go from the old basis to the new basis through the forward matrix.
+
+Covectors transformation rules:
+From old basis to new basis requires the backwards transformation. So, here this one is flipped. Thus, the dual
+basis/epsilon vectors are contravariant, while the covectors themselves are covariant.
+
+Thus: basis vectors and covector components are covariant, while dual basis vectors and vector components are
+contravariant.
+
+When in doubt: write out the linear combination, transform to summations, and try to substitute known values.
+
+Linear map definition 1: (Coordinate definition)
+- Matrices: transform vectors to vectors, but not their basis.
+- Standard matrix-vector (dot) product used for application.
+- The column vectors are identical to the transformations of the basis vectors.
+
+Linear map definition 2: (Geometric definition)
+- Spatial transforms that...
+    ... keep gridlines parallel.
+    ... keep gridlines evenly spaced.
+    ... keep the origin stationary.
+- Translations are not (true) linear maps, as they move the origin.
+
+Linear map definition 3: (Abstract definition)
+- Maps vectors to vectors => L:V->W or even L:V->V
+- Add inputs or outputs and scale inputs or outputs: thus, linear in addition and scalar multiplication.
+- Same as covectors, excepts covectors produce scalars while linear maps produce vectors.
+Representation: A transformed area (parallelogram of vectors bound to the origin).
+
+Linear map transformation rules:
+- Linear maps transform with both the backwards and forwards matrices of the vector space basis.
+- Thus L' = B * L * F (where B is F^(-1))
+
+When distinguishing between upper and lower indices, we can drop the summation sign in our equation when an upper
+index is followed by an identical lower index. -> This is called Einstein notation.
+
+Also, the kronicker delta can be used to cancel out a summation in case where a lower index is followed by an
+identical upper index of the kronicker delta (is this contraction?).
+
+basis covectors and vector components are (contravariant) (1,0)-tensors.
+basis vectors and covector components are (covariant) (0,1)-tensors.
+
+linear maps transform using both forward and backwards transformations.
+Thus, these are both contravariant and covariant (1, 1)-tensors.
+
+Metric tensor:
+- Pythagoras's theorem does not work in non-orthonormal bases.
+- The real length of a vector is given via the dot-product.
+- The length computation through a dot product can be generalized/simplified to a matrix multiplication.
+- The matrix used in the computation is called the metric tensor (g_{basis vector}).
+- The metric tensor stores all dot-products of the basis vectors of a coordinate system.
+- The metric tensor can also be used to compute the angle between two vectors.
+- We can use the metric tensor transformations (between coordinate systems) to proof that the length of a vector is
+  invariant to its coordinate system (it remains the same under a change of basis).
+- The metric tensor is a (0,2)-tensor.
+- Form: g:VxV -> R
+- scaling rule: ag(v, w) == g(av, w) == g(v, aw) != g(av, aw)
+- addition rule: g(v + u, w) = g(v, w) + g(u, w)
+                 g(v, w + t) = g(v, w) + g(v, t)
+So... from what I understand, the labels DO matter, as not all vector and covector indices of the same size in a
+tensor can be contracted.
+
+Bilinear forms
+- A generalization of the metric tensor.
+- The metric tensor is symmetric and is used to compute the length and angles of vectors.
+- A bilinear form has the same scaling and addition rules.
+- Also a (0,2)-tensor, transforming 2 vectors to a single scalar.
+- Form is a fancy word for a function that transforms n-vectors to a single scalar (thus, a covector is a 1-form).
+- Bilinear forms are 2-forms.
+- A bilinear form is (only) linear when one input is kept static.
+- The metric tensor is different from a general bilinear form because its symmetric and all lengths are greater
+   or equal to 0.
+
+We can build a linear map from a vector and a covector by performing a vector-covector tensor product.
+However, there are linear maps that cannot be written as such a product.
+Those that can are pure, others are impure. Pure ones aren't interesting as they only scale their inputs.
+Instead, we can create impure linear maps by creating a linear combination of pure linear maps.
+A tensor product is denoted by a circle with a cross (45 degree XOR).
+
+A bilinear form (including metric tensor) can be constructed using a linear combination of covector-covector pairs.
+The shape of the multidimensional-array of a bilinear map is a row of rows, as indicated by the covector-covector
+tensor product. This makes a lot of sense as it takes two vector (in the shape of columns) as inputs. Resulting in
+a scalar as output.
+
+The same symbol is used for both the tensor product and the kronecker product.
+Tensor product works on tensors, while the kronecker product works on arrays.
+Tensor product takes two tensors and constructs a third from them.
+Kronecker product takes two arrays and constructs a third by distributing the first array over the elements of the
+second.
+So, both are doing the same thing but in different contexts. One works on the abstract tensors, while the other works
+on arrays. It might be need to make this distinction in code... (e.g. a custom specialized Array class that has a
+reshaping function).
+
+Tensor multiplication is a difficult for large tensor types because there exist many ways to perform the
+multiplication. In those cases, it is often required to add some specification of the indices to be iterated over
+and/or to specify the type of the output tensor.
+
+Example: product<index_map_1, index_map_2, index_map_3>(tensor_1, tensor_2) -> tensor_3, where index_map is a mapping
+from labels to indices, which can be used to determine which should be multiplied.
+
+A multilinear map is a linear function when all inputs except one are held constant.

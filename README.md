@@ -15,7 +15,7 @@ Vector<float, 5> vector(1.0f, 2.0f, Vector<float, 2>(3.0f, 4.0f), 5.0f);
 ```
 
 ### STL Compatibility
-Vector and Matrix classes are written to be used with existing STL algorithm.
+Vector and LinearMap classes are written to be used with existing STL algorithm.
 ```cpp
 Vector<3> vector;
 std::fill(std::begin(vector), std::end(vector), 1.0f);
@@ -24,7 +24,7 @@ std::fill(std::begin(vector), std::end(vector), 1.0f);
 ### Implicit Constructors
 Implicit constructors allow for readable vector and matrix definitions.
 ```cpp
-Matrix<float, 3, 3> matrix = {
+LinearMap<float, 3, 3> matrix = {
         1.0f, 2.0f, 3.0f,
         4.0f, 5.0f, 6.0f,
         7.0f, 8.0f, 9.0f
