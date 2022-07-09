@@ -18,24 +18,13 @@ jobs:
     steps:
     
     - name: Install APT dependencies
-      run: sudo apt install build-essential cmake python pip
-
-    - name: Install conan
-      run: pip install conan
-
-    - name: Configure conan compiler
-      run: |
-        conan profile new default --detect
-        conan profile update settings.compiler.libcxx=libstdc++11 default
+      run: sudo apt install build-essential cmake python pip catch2
 
     - uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: conan install .
-
     - name: Build tests
       run: |
-        cmake -DCMAKE_TOOLCHAIN_FILE=conan/conan_toolchain.cmake -DBUILD_TESTING=ON .
+        cmake -DBUILD_TESTING=ON .
         make
         
     - name: Run tests
