@@ -22,7 +22,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     # Find test sources
     file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/tests/*.cpp")
 
-    # Create tests
+    # Create test executable
     add_executable(${PROJECT_NAME}Test ${TEST_SOURCES})
     target_link_libraries(${PROJECT_NAME}Test ${PROJECT_NAME} Catch2::Catch2WithMain)
 
