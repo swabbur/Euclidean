@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 project(Euclidean VERSION 1.0.0 LANGUAGES C CXX)
 
 # Configure CMake
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -13,6 +13,21 @@ add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
+
+# Create executable
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_EXAMPLE)
+
+    # Find test packages
+    find_package(Catch2 3 REQUIRED)
+
+    # Find example sources
+    file(GLOB_RECURSE EXAMPLE_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/example/src/*.cpp")
+
+    # Create test executable
+    add_executable(${PROJECT_NAME}Example ${EXAMPLE_SOURCES})
+    target_include_directories(${PROJECT_NAME}Example PUBLIC "${CMAKE_CURRENT_LIST_DIR}/example/include")
+    target_link_libraries(${PROJECT_NAME}Example ${PROJECT_NAME})
+endif()
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
 

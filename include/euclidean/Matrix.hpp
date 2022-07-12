@@ -1,64 +1,103 @@
 #pragma once
 
-#include "Assert.hpp"
-#include "Definitions.hpp"
-
-#include <array>
+#include "Array.hpp"
 
 namespace Euclidean {
 
-    template<typename Element, Size ROWS, Size COLUMNS>
+    template<typename Element, Size ROWS, Size COLUMNS = ROWS>
     requires (ROWS > 0 and COLUMNS > 0)
-    struct Matrix {
+    class Matrix : public Array<Element, ROWS, COLUMNS> {
 
-        static constexpr Size SIZE = ROWS * COLUMNS;
-
-        std::array<Element, SIZE> elements;
+    public:
 
         template<typename ... Elements>
-        requires (std::convertible_to<Element, Elements> and ...) and (sizeof ... (Elements) == 0 or sizeof ... (Elements) == SIZE)
-        constexpr Matrix(Elements && ... elements) : elements{ Element(elements) ... } {} // NOLINT(google-explicit-constructor)
-
-        constexpr Element const & operator [] (Index index) const {
-            assert_bounds(index, SIZE);
-            return elements[index];
-        }
-
-        constexpr Element & operator [] (Index index) {
-            assert_bounds(index, SIZE);
-            return elements[index];
-        }
-
-//        constexpr Element const & operator [] (Index row, Index column) const {
-//            return operator [] (row * COLUMNS + column);
-//        }
-
-//        constexpr Element & operator [] (Index row, Index column) {
-//            return operator [] (row * COLUMNS + column);
-//        }
-
-        constexpr auto begin() const {
-            return std::cbegin(elements);
-        }
-
-        constexpr auto end() const {
-            return std::cend(elements);
-        }
-
-        constexpr auto begin() {
-            return std::begin(elements);
-        }
-
-        constexpr auto end() {
-            return std::end(elements);
-        }
+        [[nodiscard]] constexpr Matrix(Elements && ... elements) noexcept : Array<Element, ROWS, COLUMNS>(elements ...) {} // NOLINT(google-explicit-constructor)
     };
 
-    template<typename Element, Size ROWS, Size COLUMNS>
-    constexpr auto operator - (Matrix<Element, ROWS, COLUMNS> const & matrix) {
-        using NegatedElement = decltype(std::negate<>(std::declval<Element>()));
-        Matrix<NegatedElement, ROWS, COLUMNS> negated_matrix;
-        std::transform(std::begin(matrix), std::end(matrix), std::begin(negated_matrix), std::negate<>());
-        return negated_matrix;
+    template<typename LHS, Size N, Size M>
+    [[nodiscard]] constexpr auto operator - (Matrix<LHS, N, M> const & lhs) noexcept {
+        using R = decltype(-std::declval<LHS>());
+        Matrix<R, N, M> result;
+        for (Index n = 0; n < N; n++) {
+            for (Index m = 0; m < M; m++) {
+                result[n, m] = -lhs[n, m] ;
+            }
+        }
+        return result;
+    }
+
+    template<typename LHS, typename RHS, Size N, Size M>
+    [[nodiscard]] constexpr auto operator + (Matrix<LHS, N, M> const & lhs, Matrix<RHS, N, M> const & rhs) noexcept {
+        using R = decltype(std::declval<LHS>() + std::declval<RHS>());
+        Matrix<R, N, M> result;
+        for (Index n = 0; n < N; n++) {
+            for (Index m = 0; m < M; m++) {
+                result[n, m] = lhs[n, m] + rhs[n, m];
+            }
+        }
+        return result;
+    }
+
+    template<typename LHS, typename RHS, Size N, Size M>
+    [[nodiscard]] constexpr auto operator - (Matrix<LHS, N, M> const & lhs, Matrix<RHS, N, M> const & rhs) noexcept {
+        using R = decltype(std::declval<LHS>() - std::declval<RHS>());
+        Matrix<R, N, M> result;
+        for (Index n = 0; n < N; n++) {
+            for (Index m = 0; m < M; m++) {
+                result[n, m] = lhs[n, m] - rhs[n, m];
+            }
+        }
+        return result;
+    }
+
+    template<typename LHS, typename RHS, Size N, Size M, Size P>
+    [[nodiscard]] constexpr auto operator * (Matrix<LHS, N, M> const & lhs, Matrix<RHS, M, P> const & rhs) noexcept {
+        using R = decltype(std::declval<LHS>() * std::declval<RHS>());
+        Matrix<R, N, P> result;
+        for (Index n = 0; n < N; n++) {
+            for (Index p = 0; p < P; p++) {
+                result[n, p] = 0;
+                for (Index m = 0; m < M; m++) {
+                    result[n, p] += lhs[n, m] * rhs[m, p];
+                }
+            }
+        }
+        return result;
+    }
+
+    template<typename LHS, typename RHS, Size N, Size M>
+    [[nodiscard]] constexpr auto operator * (LHS const & lhs, Matrix<RHS, N, M> const & rhs) noexcept {
+        using R = decltype(std::declval<LHS>() * std::declval<RHS>());
+        Matrix<R, N, M> result;
+        for (Index n = 0; n < N; n++) {
+            for (Index m = 0; m < M; m++) {
+                result[n, m] = lhs * rhs[n, m];
+            }
+        }
+        return result;
+    }
+
+    template<typename LHS, typename RHS, Size N, Size M>
+    [[nodiscard]] constexpr auto operator * (Matrix<LHS, N, M> const & lhs, RHS const & rhs) noexcept {
+        using R = decltype(std::declval<LHS>() * std::declval<RHS>());
+        Matrix<R, N, M> result;
+        for (Index n = 0; n < N; n++) {
+            for (Index m = 0; m < M; m++) {
+                result[n, m] = lhs[n, m] * rhs;
+            }
+        }
+        return result;
+    }
+
+    template<typename LHS, typename RHS, Size N, Size M>
+    [[nodiscard]] constexpr auto operator / (Matrix<LHS, N, M> const & lhs, RHS const & rhs) noexcept {
+        using R = decltype(std::declval<LHS>() / std::declval<RHS>());
+        Matrix<R, N, M> result;
+        for (Index n = 0; n < N; n++) {
+            for (Index m = 0; m < M; m++) {
+                result[n, m] = lhs[n, m] / rhs;
+            }
+        }
+        return result;
     }
 }

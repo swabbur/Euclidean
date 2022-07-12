@@ -1,13 +1,15 @@
 #include <catch2/catch_test_macros.hpp>
 #include <euclidean/Matrix.hpp>
 
-using Element = std::uint32_t;
+using Element = std::int32_t;
 
 template<typename Element, std::size_t ROWS, std::size_t COLUMNS>
 static void require(Euclidean::Matrix<Element, ROWS, COLUMNS> const & matrix,
                     std::array<Element, ROWS * COLUMNS> const & array) {
-    for (std::size_t index = 0; index < ROWS * COLUMNS; index++) {
-        REQUIRE(matrix[index] == array[index]);
+    for (std::size_t i = 0; i < ROWS; i++) {
+        for (std::size_t j = 0; j <  COLUMNS; j++) {
+            REQUIRE(matrix[i, j] == array[i * COLUMNS + j]);
+        }
     }
 }
 
