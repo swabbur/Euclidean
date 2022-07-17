@@ -3,15 +3,15 @@
 
 using namespace Euclidean;
 
-template<typename Element, Size ROWS, Size COLUMNS>
-void print(Array<Element, ROWS, COLUMNS> const & matrix) {
+template<Field Component, Size ROWS, Size COLUMNS>
+void print(Matrix<Component, ROWS, COLUMNS> const & matrix) {
     for (Index row = 0; row < ROWS; row++) {
         for (Index column = 0; column < COLUMNS; column++) {
             std::cout << matrix[row, column] << '\t';
         }
         std::cout << '\n';
     }
-    std::cout << std::flush;
+    std::cout << std::endl;
 }
 
 int main() {
@@ -27,18 +27,9 @@ int main() {
     };
 
     print(-a);
-
     print(a + b);
-
     print(a - b);
-
     print(a * b);
-
-    print(2 * a);
-
-    print(a * 2);
-
-    print(a / 2);
 
     return 0;
 }

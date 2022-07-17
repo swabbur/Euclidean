@@ -1,103 +1,116 @@
 #pragma once
 
-#include "Array.hpp"
+#include "Tensor.hpp"
 
 namespace Euclidean {
 
-    template<typename Element, Size ROWS, Size COLUMNS = ROWS>
-    requires (ROWS > 0 and COLUMNS > 0)
-    class Matrix : public Array<Element, ROWS, COLUMNS> {
+    template<Field Component, Size ROWS, Size COLUMNS = ROWS>
+    class Matrix {
+
+        using TensorType = Tensor<Component, Dimension<Variance::COVARIANT, ROWS>, Dimension<Variance::CONTRAVARIANT, COLUMNS>>;
+        using ArrayType = Array<Component, ROWS, COLUMNS>;
+
+        TensorType tensor;
 
     public:
 
-        template<typename ... Elements>
-        [[nodiscard]] constexpr Matrix(Elements && ... elements) noexcept : Array<Element, ROWS, COLUMNS>(elements ...) {} // NOLINT(google-explicit-constructor)
-    };
+        template<typename ... Components>
+        [[nodiscard]] constexpr Matrix(Components && ... components) noexcept : // NOLINT(google-explicit-constructor)
+            tensor(std::forward<Components>(components) ...)
+        {}
 
-    template<typename LHS, Size N, Size M>
-    [[nodiscard]] constexpr auto operator - (Matrix<LHS, N, M> const & lhs) noexcept {
-        using R = decltype(-std::declval<LHS>());
-        Matrix<R, N, M> result;
-        for (Index n = 0; n < N; n++) {
-            for (Index m = 0; m < M; m++) {
-                result[n, m] = -lhs[n, m] ;
-            }
+        [[nodiscard]] explicit constexpr Matrix(TensorType const & tensor) noexcept : tensor(tensor) {}
+
+        [[nodiscard]] explicit constexpr Matrix(TensorType && tensor) noexcept : tensor(tensor) {}
+
+        [[nodiscard]] explicit constexpr Matrix(ArrayType const & array) noexcept : tensor(array) {}
+
+        [[nodiscard]] explicit constexpr Matrix(ArrayType && array) noexcept : tensor(array) {}
+
+        [[nodiscard]] constexpr operator TensorType const & () const { // NOLINT(google-explicit-constructor)
+            return tensor;
         }
-        return result;
-    }
 
-    template<typename LHS, typename RHS, Size N, Size M>
-    [[nodiscard]] constexpr auto operator + (Matrix<LHS, N, M> const & lhs, Matrix<RHS, N, M> const & rhs) noexcept {
-        using R = decltype(std::declval<LHS>() + std::declval<RHS>());
-        Matrix<R, N, M> result;
-        for (Index n = 0; n < N; n++) {
-            for (Index m = 0; m < M; m++) {
-                result[n, m] = lhs[n, m] + rhs[n, m];
-            }
+        [[nodiscard]] constexpr operator TensorType & () { // NOLINT(google-explicit-constructor)
+            return tensor;
         }
-        return result;
-    }
 
-    template<typename LHS, typename RHS, Size N, Size M>
-    [[nodiscard]] constexpr auto operator - (Matrix<LHS, N, M> const & lhs, Matrix<RHS, N, M> const & rhs) noexcept {
-        using R = decltype(std::declval<LHS>() - std::declval<RHS>());
-        Matrix<R, N, M> result;
-        for (Index n = 0; n < N; n++) {
-            for (Index m = 0; m < M; m++) {
-                result[n, m] = lhs[n, m] - rhs[n, m];
-            }
+        [[nodiscard]] constexpr operator ArrayType const & () const { // NOLINT(google-explicit-constructor)
+            return static_cast<ArrayType const &>(tensor);
         }
-        return result;
-    }
 
-    template<typename LHS, typename RHS, Size N, Size M, Size P>
-    [[nodiscard]] constexpr auto operator * (Matrix<LHS, N, M> const & lhs, Matrix<RHS, M, P> const & rhs) noexcept {
-        using R = decltype(std::declval<LHS>() * std::declval<RHS>());
-        Matrix<R, N, P> result;
-        for (Index n = 0; n < N; n++) {
-            for (Index p = 0; p < P; p++) {
-                result[n, p] = 0;
-                for (Index m = 0; m < M; m++) {
-                    result[n, p] += lhs[n, m] * rhs[m, p];
+        [[nodiscard]] constexpr operator ArrayType & () { // NOLINT(google-explicit-constructor)
+            return static_cast<ArrayType &>(tensor);
+        }
+
+        template<typename ... Indices>
+        [[nodiscard]] constexpr Component const & operator [] (Indices && ... indices) const noexcept {
+            return tensor[std::forward<Indices>(indices) ...];
+        }
+
+        template<typename ... Indices>
+        [[nodiscard]] constexpr Component & operator [] (Indices && ... indices) noexcept {
+            return tensor[std::forward<Indices>(indices) ...];
+        }
+
+        [[nodiscard]] constexpr bool operator <=> (TensorType const & rhs) const noexcept {
+            return tensor <=> rhs;
+        }
+
+        [[nodiscard]] constexpr auto begin() const noexcept {
+            return tensor.begin();
+        }
+
+        [[nodiscard]] constexpr auto begin() noexcept {
+            return tensor.begin();
+        }
+
+        [[nodiscard]] constexpr auto end() const noexcept {
+            return tensor.end();
+        }
+
+        [[nodiscard]] constexpr auto end() noexcept {
+            return tensor.end();
+        }
+
+        [[nodiscard]] constexpr Matrix<Component, ROWS, COLUMNS> operator - () const noexcept {
+            return -tensor;
+        }
+
+        [[nodiscard]] constexpr Matrix<Component, ROWS, COLUMNS> operator + (Matrix<Component, ROWS, COLUMNS> const & rhs) const noexcept {
+            return tensor + rhs;
+        }
+
+        constexpr Matrix<Component, ROWS, COLUMNS> & operator += (Matrix<Component, ROWS, COLUMNS> const & rhs) noexcept {
+            return tensor += rhs;
+        }
+
+        [[nodiscard]] constexpr Matrix<Component, ROWS, COLUMNS> operator - (Matrix<Component, ROWS, COLUMNS> const & rhs) const noexcept {
+            return tensor - rhs;
+        }
+
+        constexpr Matrix<Component, ROWS, COLUMNS> & operator -= (Matrix<Component, ROWS, COLUMNS> const & rhs) noexcept {
+            return tensor -= rhs;
+        }
+
+        template<Size SIZE>
+        [[nodiscard]] constexpr Matrix<Component, ROWS> operator * (Matrix<Component, COLUMNS, SIZE> const & rhs) const noexcept {
+            Matrix<Component, ROWS, SIZE> result;
+            for (Index row = 0; row < ROWS; row++) {
+                for (Index size = 0; size < SIZE; size++) {
+                    result[row, size] = 0;
+                    for (Index column = 0; column < COLUMNS; column++) {
+                        result[row, size] += (*this)[row, column] * rhs[column, size];
+                    }
                 }
             }
+            return result;
         }
-        return result;
-    }
 
-    template<typename LHS, typename RHS, Size N, Size M>
-    [[nodiscard]] constexpr auto operator * (LHS const & lhs, Matrix<RHS, N, M> const & rhs) noexcept {
-        using R = decltype(std::declval<LHS>() * std::declval<RHS>());
-        Matrix<R, N, M> result;
-        for (Index n = 0; n < N; n++) {
-            for (Index m = 0; m < M; m++) {
-                result[n, m] = lhs * rhs[n, m];
-            }
+        template<Size RHS_COLUMNS>
+        requires (ROWS == RHS_COLUMNS)
+        constexpr Matrix<Component, ROWS> & operator *= (Matrix<Component, ROWS, RHS_COLUMNS> const & rhs) noexcept {
+            return operator=(operator*(rhs));
         }
-        return result;
-    }
-
-    template<typename LHS, typename RHS, Size N, Size M>
-    [[nodiscard]] constexpr auto operator * (Matrix<LHS, N, M> const & lhs, RHS const & rhs) noexcept {
-        using R = decltype(std::declval<LHS>() * std::declval<RHS>());
-        Matrix<R, N, M> result;
-        for (Index n = 0; n < N; n++) {
-            for (Index m = 0; m < M; m++) {
-                result[n, m] = lhs[n, m] * rhs;
-            }
-        }
-        return result;
-    }
-
-    template<typename LHS, typename RHS, Size N, Size M>
-    [[nodiscard]] constexpr auto operator / (Matrix<LHS, N, M> const & lhs, RHS const & rhs) noexcept {
-        using R = decltype(std::declval<LHS>() / std::declval<RHS>());
-        Matrix<R, N, M> result;
-        for (Index n = 0; n < N; n++) {
-            for (Index m = 0; m < M; m++) {
-                result[n, m] = lhs[n, m] / rhs;
-            }
-        }
-        return result;
-    }
+    };
 }
