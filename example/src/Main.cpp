@@ -1,4 +1,5 @@
 #include <euclidean/Matrix.hpp>
+#include <euclidean/Vector.hpp>
 #include <iostream>
 
 using namespace Euclidean;
@@ -18,18 +19,23 @@ int main() {
 
     Matrix<int, 2> a = {
             1, 2,
-            3, 4
+            3, 4,
     };
 
     Matrix<int, 2> b = {
             5, 6,
-            7, 8
+            7, 8,
+    };
+
+    Vector<int, 2> x = {
+            4, 6,
     };
 
     print(-a);
     print(a + b);
     print(a - b);
     print(a * b);
+    print(a * x);
 
     return 0;
 }
